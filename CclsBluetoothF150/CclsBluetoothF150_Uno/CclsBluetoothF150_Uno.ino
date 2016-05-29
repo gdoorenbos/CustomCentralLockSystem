@@ -1,10 +1,10 @@
 #include "DriverFactoryImpl.h"
-#include <CentralLockSystemF150Custom.h>
+#include <BluetoothCentralLockSystem.h>
 
 void setup()
 {
     DriverFactory* df = DriverFactoryImpl::getInstance();
-    CentralLockSystemF150Custom cls(df->getBluetoothDriver());
+    BluetoothCentralLockSystem cls(df->getBluetoothDriver());
 }
 
 void loop()
