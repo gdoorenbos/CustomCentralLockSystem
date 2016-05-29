@@ -6,7 +6,7 @@ class PowerLocksDriver
 protected:
     // don't instantiate this class directly
     PowerLocksDriver();
-    
+
 public:
     virtual ~PowerLocksDriver();
     virtual void lockDoors() = 0;
