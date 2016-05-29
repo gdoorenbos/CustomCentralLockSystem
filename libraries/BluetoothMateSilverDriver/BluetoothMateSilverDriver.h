@@ -8,6 +8,8 @@ class BluetoothMateSilverDriver : public BluetoothDriver
 public:
 	BluetoothMateSilverDriver();
 	~BluetoothMateSilverDriver();
+
+    bool isDeviceConnected();
 };
 
 #endif

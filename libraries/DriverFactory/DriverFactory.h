@@ -10,9 +10,9 @@ class DriverFactory
 protected:
     // don't instantiate this class directly
     DriverFactory();
-    ~DriverFactory();
 
 public:
+    virtual ~DriverFactory();
     virtual BluetoothDriver* getBluetoothDriver();
     virtual PowerLocksDriver* getPowerLocksDriver();
 };

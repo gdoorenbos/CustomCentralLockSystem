@@ -3,9 +3,14 @@
 
 class PowerLocksDriver
 {
-public:
+protected:
+    // don't instantiate this class directly
     PowerLocksDriver();
-    ~PowerLocksDriver();
+    
+public:
+    virtual ~PowerLocksDriver();
+    virtual void lockDoors() = 0;
+    virtual void unlockDoors() = 0;
 };
 
 #endif

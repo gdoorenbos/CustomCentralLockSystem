@@ -16,6 +16,11 @@ public:
     // driver getters
     BluetoothDriver* getBluetoothDriver();
     PowerLocksDriver* getPowerLocksDriver();
+
+private:
+    BluetoothDriver* bluetoothDriver;
+    PowerLocksDriver* powerLocksDriver;
 };
 
 #endif
+

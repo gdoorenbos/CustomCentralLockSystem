@@ -4,8 +4,12 @@
 class BluetoothDriver
 {
 protected:
-	BluetoothDriver();
-	~BluetoothDriver();
+    // don't instantiate this class directly
+    BluetoothDriver();
+    
+public:
+	virtual ~BluetoothDriver();
+    virtual bool isDeviceConnected() = 0;
 };
 
 #endif

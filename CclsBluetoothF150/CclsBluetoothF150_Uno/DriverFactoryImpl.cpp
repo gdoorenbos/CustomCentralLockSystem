@@ -1,13 +1,17 @@
 #include "DriverFactoryImpl.h"
 #include <BluetoothMateSilverDriver.h>
-#include <PowerLocksDriver.h>   // todo: replace with derived class
+#include <PowerLocksDriverF150Custom.h>   // todo: replace with derived class
 
 DriverFactoryImpl::DriverFactoryImpl()
+    : bluetoothDriver(new BluetoothMateSilverDriver())
+    , powerLocksDriver(new PowerLocksDriverF150Custom())
 {
 }
 
 DriverFactoryImpl::~DriverFactoryImpl()
 {
+    delete bluetoothDriver;
+    delete powerLocksDriver;
 }
 
 DriverFactory* DriverFactoryImpl::getInstance()
@@ -22,11 +26,11 @@ DriverFactory* DriverFactoryImpl::getInstance()
 
 BluetoothDriver* DriverFactoryImpl::getBluetoothDriver()
 {
-    return new BluetoothMateSilverDriver();
+    return bluetoothDriver;
 }
 
 PowerLocksDriver* DriverFactoryImpl::getPowerLocksDriver()
 {
-    //todo: return power locks driver
-    return 0;
+    return powerLocksDriver;
 }
+
