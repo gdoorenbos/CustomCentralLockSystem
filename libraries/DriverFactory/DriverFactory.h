@@ -4,6 +4,7 @@
 // forward declarations
 class BluetoothDriver;
 class PowerLocksDriver;
+class PushButtonDriver;
 
 class DriverFactory
 {
@@ -15,6 +16,8 @@ public:
     virtual ~DriverFactory();
     virtual BluetoothDriver* getBluetoothDriver();
     virtual PowerLocksDriver* getPowerLocksDriver();
+    virtual PushButtonDriver* getLockButton();
+    virtual PushButtonDriver* getUnlockButton();
 };
 
 #endif

@@ -6,12 +6,19 @@
 // forward declarations
 class BluetoothDriver;
 class PowerLocksDriver;
+class PushButtonDriver;
 
 class BluetoothCentralLockSystem
 {
 public:
-    BluetoothCentralLockSystem(BluetoothDriver* bluetoothDriver, PowerLocksDriver* locksDriver);
+    BluetoothCentralLockSystem( BluetoothDriver* bluetoothDriver
+                              , PowerLocksDriver* locksDriver
+                              , PushButtonDriver* lockButton
+                              , PushButtonDriver* unlockButton );
     ~BluetoothCentralLockSystem();
+
+    // periodically polled method - does the real work of the system
+    void run();
 
 private:
     // intentionally unimplemented
@@ -20,8 +27,10 @@ private:
     // methods
 
     // members
-    BluetoothDriver* bluetooth;
-    PowerLocksDriver* locks;
+    const BluetoothDriver* bluetooth;
+    const PowerLocksDriver* locks;
+    const PushButtonDriver* lockButton;
+    const PushButtonDriver* unlockButton;
 };
 
 #endif

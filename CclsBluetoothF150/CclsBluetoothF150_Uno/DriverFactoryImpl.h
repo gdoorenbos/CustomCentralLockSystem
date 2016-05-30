@@ -16,10 +16,14 @@ public:
     // driver getters
     BluetoothDriver* getBluetoothDriver();
     PowerLocksDriver* getPowerLocksDriver();
+    PushButtonDriver* getLockButton();
+    PushButtonDriver* getUnlockButton();
 
 private:
     BluetoothDriver* bluetoothDriver;
     PowerLocksDriver* powerLocksDriver;
+    PushButtonDriver* lockButton;
+    PushButtonDriver* unlockButton;
 };
 
 #endif

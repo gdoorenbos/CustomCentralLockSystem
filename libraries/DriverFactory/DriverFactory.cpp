@@ -17,3 +17,13 @@ PowerLocksDriver* DriverFactory::getPowerLocksDriver()
 {
     return 0;
 }
+
+PushButtonDriver* DriverFactory::getLockButton()
+{
+    return 0;
+}
+
+PushButtonDriver* DriverFactory::getUnlockButton()
+{
+    return 0;
+}
