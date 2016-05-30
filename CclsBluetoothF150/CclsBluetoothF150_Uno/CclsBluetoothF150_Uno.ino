@@ -4,12 +4,11 @@
 void setup()
 {
     DriverFactory* df = DriverFactoryImpl::getInstance();
-    BluetoothCentralLockSystem cls(df->getBluetoothDriver());
+    BluetoothCentralLockSystem cls(df->getBluetoothDriver(), df->getPowerLocksDriver());
 }
 
 void loop()
 {
     
 }
-
 

@@ -10,7 +10,7 @@ class PowerLocksDriver;
 class BluetoothCentralLockSystem
 {
 public:
-    BluetoothCentralLockSystem(BluetoothDriver* bluetoothDriver);
+    BluetoothCentralLockSystem(BluetoothDriver* bluetoothDriver, PowerLocksDriver* locksDriver);
     ~BluetoothCentralLockSystem();
 
 private:
