@@ -1,20 +1,22 @@
 #include "PushButtonDriver.h"
 #include <Arduino.h>
 
-PushButtonDriver::PushButtonDriver(int pin, bool isPullDown)
+PushButtonDriver::PushButtonDriver(int pin)
     : buttonPin(pin)
-    , isPullDown(isPullDown)
 {
+    pinMode(buttonPin, INPUT_PULLUP);
 }
 
 PushButtonDriver::~PushButtonDriver()
 {
 }
 
-bool PushButtonDriver::isButtonPressed()
+bool PushButtonDriver::isPressed() const
 {
-    if( isPullDown )
+    if( digitalRead(buttonPin) == LOW)
+    {
+        delay(100); // debounce
         return (digitalRead(buttonPin) == LOW);
-    else
-        return (digitalRead(buttonPin) == HIGH);
+    }
+    return false;
 }

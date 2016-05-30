@@ -15,8 +15,8 @@ public:
     PowerLocksDriverF150Custom(int lockPin, int unlockPin);
     ~PowerLocksDriverF150Custom();
 
-    void lockDoors();
-    void unlockDoors();
+    void lockDoors() const;
+    void unlockDoors() const;
 
 private:
     // intentionally unimplemented - use the public ctor with arguments
@@ -25,11 +25,11 @@ private:
     /* Waits for locks to settle up or down after pulling either lock or
      * unlock pin high. 
      */
-    void waitForLocksToSettle();
+    void waitForLocksToSettle() const;
 
     // member variables
-    int lockPin;
-    int unlockPin;
+    const int lockPin;
+    const int unlockPin;
 };
 
 #endif

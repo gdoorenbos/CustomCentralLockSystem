@@ -4,16 +4,15 @@
 class PushButtonDriver
 {
 public:
-    PushButtonDriver(int pin, bool isPullDown=true);
+    PushButtonDriver(int pin);
     ~PushButtonDriver();
 
-    bool isButtonPressed();
+    bool isPressed() const;
 
 private:
     PushButtonDriver(); // intentionally not implemented
 
     const int buttonPin;
-    const bool isPullDown;
 };
 
 #endif
