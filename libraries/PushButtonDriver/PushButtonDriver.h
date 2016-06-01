@@ -3,16 +3,13 @@
 
 class PushButtonDriver
 {
+protected:
+    // don't instantiate this class directly
+    PushButtonDriver();
+
 public:
-    PushButtonDriver(int pin);
-    ~PushButtonDriver();
-
-    bool isPressed() const;
-
-private:
-    PushButtonDriver(); // intentionally not implemented
-
-    const int buttonPin;
+    virtual ~PushButtonDriver();
+    virtual bool isPressed() const = 0;
 };
 
 #endif
