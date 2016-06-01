@@ -9,7 +9,11 @@ protected:
 
 public:
 	virtual ~BluetoothDriver();
-    virtual bool isDeviceConnected() = 0;
+    virtual bool isDeviceConnected() const = 0;
+    virtual void print(const char* message) const = 0;
+    virtual void printLine(const char* message) const = 0;
+    virtual bool hasMessage() const = 0;
+    virtual const char* getMessage() const = 0;
 };
 
 #endif

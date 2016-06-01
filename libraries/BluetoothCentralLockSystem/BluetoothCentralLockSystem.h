@@ -25,12 +25,20 @@ private:
     BluetoothCentralLockSystem();
 
     // methods
+    void sendGreetingMessage();
+    void sendPrompt();
+    void handleBluetoothMessage();
+    void resetBluetoothConnectionParameters();
 
     // members
     const BluetoothDriver* bluetooth;
     const PowerLocksDriver* locks;
     const PushButtonDriver* lockButton;
     const PushButtonDriver* unlockButton;
+    bool sentGreetingMessage;
+    bool requestingUsername;
+    bool requestingPassword;
+    bool userLoggedIn;
 };
 
 #endif
