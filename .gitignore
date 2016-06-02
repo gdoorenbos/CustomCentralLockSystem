@@ -1,2 +1,4 @@
 Docs/*
 libraries/BluetoothCentralLockSystem/UserLogin.h
+*.[oa]
+*.~
