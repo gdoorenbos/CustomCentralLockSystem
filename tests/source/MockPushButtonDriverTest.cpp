@@ -1,5 +1,3 @@
-#include <cstdio>
-#include <cstdlib>
 #include "gtest/gtest.h"
 #include "MockPushButtonDriver.h"
 
