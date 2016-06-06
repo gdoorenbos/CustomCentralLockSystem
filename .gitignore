@@ -5,4 +5,3 @@ libraries/BluetoothCentralLockSystem/UserLogin.h
 tests/install/*
 tests/packages/*.done
 tests/output/*
-!tests/output/readme

@@ -7,25 +7,6 @@ EXTRACT_TARGETS := $(addsuffix .done,$(PACKAGES))
 CLEAN_TARGETS := $(addsuffix .clean,$(PACKAGES))
 GTEST_VERSION := googletest-release-1.7.0
 
-.PHONY: help
-help:
-	@echo "make targets:"
-	@echo "    all: installs packages, builds tests, runs tests"
-	@echo "    build-and-run: builds and runs the test code"
-	@echo ""
-	@echo "    install-packages: unpacks tarballs in the packages/ directory"
-	@echo "    build: builds the test code"
-	@echo "    run-tests: runs the test code"
-	@echo ""
-	@echo "    clean: deletes build artifacts (*.o files, *.a files, etc.)"
-	@echo "    clean-packages: cleans the install/ directory"
-	@echo ""
-
-.PHONY: test
-test:
-	@echo "PACKAGES: $(PACKAGES)"
-	@echo "EXTRACT_TARGETS: $(EXTRACT_TARGETS)"
-
 # Gtest variables
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
@@ -45,7 +26,10 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = $(OUTPUT_DIR)/BluetoothCentralLockSystemTest
+# TESTS = $(OUTPUT_DIR)/BluetoothCentralLockSystemTest $(OUTPUT_DIR)/MockPushButtonDriverTest
+TEST_SOURCES := $(wildcard $(USER_DIR)/*.cpp)
+TEST_OBJS := $(patsubst $(USER_DIR)/%.cpp,$(OUTPUT_DIR)/%.o,$(TEST_SOURCES))
+TEST_EXECUTABLE := $(OUTPUT_DIR)/test
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -62,6 +46,27 @@ GTEST_MAIN_O = $(OUTPUT_DIR)/gtest_main.o
 GTEST_MAIN_A = $(OUTPUT_DIR)/gtest_main.a
 GTEST_A = $(OUTPUT_DIR)/gtest.a
 
+# default target
+.PHONY: all
+all: run-tests
+
+# Help text
+.PHONY: help
+help:
+	@echo "make targets:"
+	@echo "    all: 	default target. Builds and runs test code in $(USER_DIR)/ directory."
+	@echo "    help: 	displays this help text."
+	@echo ""
+	@echo "    install-packages:	unpacks tarballs in the $(PACKAGE_DIR)/ directory."
+	@echo "    build: 				builds the test code in the $(USER_DIR)/ directory."
+	@echo "    run-tests: 			runs the test code, building it first if necessary."
+	@echo ""
+	@echo "    clean: 			deletes build artifacts (*.o files, *.a files, etc.)."
+	@echo "    clean-packages: 	cleans the $(INSTALL_DIR)/ directory."
+	@echo "    clean-all: 		cleans build artifacts and the $(INSTALL_DIR)/ directory."
+	@echo ""
+
+# Google test targets
 # For simplicity and to avoid depending on Google Test's
 # implementation details, the dependencies specified below are
 # conservative and not optimized.  This is fine as Google Test
@@ -78,49 +83,49 @@ $(GTEST_A) : $(GTEST_ALL_O)
 $(GTEST_MAIN_A) : $(GTEST_ALL_O) $(GTEST_MAIN_O)
 	$(AR) $(ARFLAGS) $@ $^
 
-# .PHONY: all
-# all:
-# 	@echo "hello world!"
-
-# .PHONY: clean
-# clean: clean-packages
-
-# .PHONY: clean-packages
-# clean-packages:
-# 	@echo "Cleaning install/ directory..."
-# 	@rm -rf install/
-# 	@mkdir install
-# 	@echo "done"
-
-# .PHONY: install-packages
-# install-packages: clean-packages
-# 	tar xzf packages/*.tar.gz --directory install/
-
-# .PHONY: build
-# build: $(OBJS)
-
-install-packages: $(EXTRACT_TARGETS)
-
-clean-packages: $(CLEAN_TARGETS)
-
+# Directories
 $(INSTALL_DIR):
 	mkdir -p $@
 
-$(CLEAN_TARGETS):%.clean: %.done
-	rm -rf $(INSTALL_DIR)/$(shell tar tf $(patsubst %.done,%,$<) | head -1)
-	rm -f $<
+$(OUTPUT_DIR):
+	mkdir -p $@
 
+# Package targets
 $(EXTRACT_TARGETS):%.done: % | $(INSTALL_DIR)
 	tar zxf $< --directory $(INSTALL_DIR)/
 	touch $@
 
-build: $(TESTS)
+.PHONY: install-packages
+install-packages: $(EXTRACT_TARGETS)
 
-# BluetoothCentralLockSystemTest
+.PHONY: $(CLEAN_TARGETS)
+$(CLEAN_TARGETS):%.clean:
+	rm -rf $(INSTALL_DIR)/$(shell tar tf $(patsubst %.clean,%,$@) | head -1)
+	rm -f $(patsubst %.clean,%.done,$@)
 
-$(OUTPUT_DIR)/BluetoothCentralLockSystemTest.o: $(GTEST_HEADERS) $(USER_DIR)/BluetoothCentralLockSystemTest.cpp 
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/BluetoothCentralLockSystemTest.cpp -o $@
+.PHONY: clean-packages
+clean-packages: $(CLEAN_TARGETS)
+	rm -rf $(INSTALL_DIR)
 
-$(OUTPUT_DIR)/BluetoothCentralLockSystemTest: $(OUTPUT_DIR)/BluetoothCentralLockSystemTest.o $(GTEST_MAIN_A)
+# Build targets
+$(TEST_OBJS):$(OUTPUT_DIR)/%.o: $(USER_DIR)/%.cpp $(GTEST_HEADERS) | $(OUTPUT_DIR)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(TEST_EXECUTABLE): $(TEST_OBJS) $(GTEST_MAIN_A) | $(OUTPUT_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+
+.PHONY: build
+build: $(TEST_EXECUTABLE)
+
+.PHONY: run-tests
+run-tests: $(TEST_EXECUTABLE)
+	@ $(TEST_EXECUTABLE)
+
+# Clean targets
+.PHONY: clean
+clean:
+	rm -rf $(OUTPUT_DIR)
+
+.PHONY: clean-all
+clean-all: clean clean-packages
 
