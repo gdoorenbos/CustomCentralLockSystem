@@ -10,8 +10,8 @@ public:
     ~MockPowerLocksDriver();
 
     // inherited
-    void lockDoors() const;
-    void unlockDoors() const;
+    void lockDoors();
+    void unlockDoors();
 
     // mock method to check status
     bool areDoorsLocked() const;

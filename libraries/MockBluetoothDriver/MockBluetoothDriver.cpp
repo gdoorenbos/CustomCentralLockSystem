@@ -34,7 +34,7 @@ bool MockBluetoothDriver::hasMessage() const
     return (messageFromDevice != 0);
 }
 
-const char* MockBluetoothDriver::getMessage() const
+const char* MockBluetoothDriver::getMessage()
 {
     if( hasMessage() )
         return makeCopyOfMessageFromDeviceAndDelete();
@@ -70,7 +70,7 @@ void MockBluetoothDriver::deleteMessageFromDeviceIfPresent()
         deleteMessageFromDevice();
 }
 
-char* MockBluetoothDriver::makeCopyOfStringOnHeap(char* originalStr)
+char* MockBluetoothDriver::makeCopyOfStringOnHeap(const char* originalStr) const
 {
     char* newStr = new char[strlen(originalStr)+1];
     strncpy(newStr, originalStr, strlen(originalStr)+1);
@@ -84,7 +84,7 @@ char* MockBluetoothDriver::makeCopyOfMessageFromDeviceAndDelete()
     return returnStr;
 }
 
-void MockBluetoothDriver::updateMessageFromDevice(char* message)
+void MockBluetoothDriver::updateMessageFromDevice(const char* message)
 {
     deleteMessageFromDeviceIfPresent();
     messageFromDevice = makeCopyOfStringOnHeap(message);

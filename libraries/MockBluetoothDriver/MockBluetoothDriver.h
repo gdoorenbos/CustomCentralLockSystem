@@ -14,7 +14,7 @@ public:
     void print(const char* message) const;
     void printLine(const char* message) const;
     bool hasMessage() const;
-    const char* getMessage() const;
+    const char* getMessage();
 
     // mock methods
     void connectDevice();
@@ -27,8 +27,8 @@ private:
     char* makeCopyOfMessageFromDeviceAndDelete();
 
     // DO NOT pass null to these methods 
-    char* makeCopyOfStringOnHeap(char* original);
-    void updateMessageFromDevice(char* message);
+    char* makeCopyOfStringOnHeap(const char* original) const;
+    void updateMessageFromDevice(const char* message);
 
     bool deviceIsConnected;
     const char* messageFromDevice;

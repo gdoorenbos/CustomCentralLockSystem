@@ -9,8 +9,8 @@ protected:
 
 public:
     virtual ~PowerLocksDriver();
-    virtual void lockDoors() const = 0;
-    virtual void unlockDoors() const = 0;
+    virtual void lockDoors() = 0;
+    virtual void unlockDoors() = 0;
 };
 
 #endif

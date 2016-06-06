@@ -14,12 +14,12 @@ void MockPushButtonDriver::press()
     buttonIsPressed = true;
 }
 
-void MockPushButtonDriver::unpress()
+void MockPushButtonDriver::release()
 {
     buttonIsPressed = false;
 }
 
-bool MockPushButtonDriver::isButtonPressed() const
+bool MockPushButtonDriver::isPressed() const
 {
     return buttonIsPressed;
 }

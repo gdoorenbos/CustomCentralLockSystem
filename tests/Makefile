@@ -15,6 +15,12 @@ GTEST_DIR = $(INSTALL_DIR)/$(GTEST_VERSION)
 # Where to find user code.
 USER_DIR = source
 LIB_DIR = ../libraries
+CPPFLAGS += $(patsubst %,-I%,$(wildcard $(LIB_DIR)/*))
+MOCK_OBJ_NAMES := $(patsubst $(LIB_DIR)/%,%,$(wildcard $(LIB_DIR)/Mock*))
+MOCK_OBJ_NAMES += $(patsubst $(LIB_DIR)/Mock%,%,$(wildcard $(LIB_DIR)/Mock*))
+MOCK_OBJ_DIRS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OUTPUT_DIR)/$(MOCK_OBJ_NAME))
+MOCK_OBJS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OUTPUT_DIR)/$(MOCK_OBJ_NAME)/$(MOCK_OBJ_NAME).o)
+MOCK_HEADERS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(wildcard $(LIB_DIR)/$(MOCK_OBJ_NAME)/*.h))
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
@@ -26,7 +32,6 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-# TESTS = $(OUTPUT_DIR)/BluetoothCentralLockSystemTest $(OUTPUT_DIR)/MockPushButtonDriverTest
 TEST_SOURCES := $(wildcard $(USER_DIR)/*.cpp)
 TEST_OBJS := $(patsubst $(USER_DIR)/%.cpp,$(OUTPUT_DIR)/%.o,$(TEST_SOURCES))
 TEST_EXECUTABLE := $(OUTPUT_DIR)/test
@@ -66,6 +71,12 @@ help:
 	@echo "    clean-all: 		cleans build artifacts and the $(INSTALL_DIR)/ directory."
 	@echo ""
 
+.PHONY: devhelp
+devhelp:
+	@echo "MOCK_OBJ_NAMES: $(MOCK_OBJ_NAMES)"
+	@echo "MOCK_OBJS: $(MOCK_OBJS)"
+	@echo "MOCK_HEADERS: $(MOCK_HEADERS)"
+
 # Google test targets
 # For simplicity and to avoid depending on Google Test's
 # implementation details, the dependencies specified below are
@@ -90,6 +101,9 @@ $(INSTALL_DIR):
 $(OUTPUT_DIR):
 	mkdir -p $@
 
+$(MOCK_OBJ_DIRS): | $(OUTPUT_DIR)
+	mkdir -p $@
+
 # Package targets
 $(EXTRACT_TARGETS):%.done: % | $(INSTALL_DIR)
 	tar zxf $< --directory $(INSTALL_DIR)/
@@ -108,10 +122,14 @@ clean-packages: $(CLEAN_TARGETS)
 	rm -rf $(INSTALL_DIR)
 
 # Build targets
-$(TEST_OBJS):$(OUTPUT_DIR)/%.o: $(USER_DIR)/%.cpp $(GTEST_HEADERS) | $(OUTPUT_DIR)
+$(MOCK_OBJS):$(OUTPUT_DIR)/%.o: $(LIB_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(MOCK_OBJ_DIRS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(TEST_EXECUTABLE): $(TEST_OBJS) $(GTEST_MAIN_A) | $(OUTPUT_DIR)
+$(TEST_OBJS):$(OUTPUT_DIR)/%.o: $(USER_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(OUTPUT_DIR)
+# $(TEST_OBJS):$(OUTPUT_DIR)/%.o: $(USER_DIR)/%.cpp $(GTEST_HEADERS) | $(OUTPUT_DIR)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(TEST_EXECUTABLE): $(TEST_OBJS) $(MOCK_OBJS) $(GTEST_MAIN_A) | $(OUTPUT_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
 .PHONY: build

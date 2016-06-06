@@ -9,12 +9,12 @@ MockPowerLocksDriver::~MockPowerLocksDriver()
 {
 }
 
-void MockPowerLocksDriver::lockDoors() const
+void MockPowerLocksDriver::lockDoors()
 {
     doorsAreLocked = true;
 }
 
-void MockPowerLocksDriver::unlockDoors() const
+void MockPowerLocksDriver::unlockDoors()
 {
     doorsAreLocked = false;
 }

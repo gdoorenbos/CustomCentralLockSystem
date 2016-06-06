@@ -10,8 +10,8 @@ public:
     ~MockPushButtonDriver();
 
     void press();
-    void unpress();
-    bool isButtonPressed() const;
+    void release();
+    bool isPressed() const;
 
 private:
     bool buttonIsPressed;
