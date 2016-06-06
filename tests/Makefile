@@ -2,6 +2,7 @@
 PACKAGE_DIR := packages
 INSTALL_DIR := install
 OUTPUT_DIR := output
+OBJ_DIR := $(OUTPUT_DIR)/obj
 PACKAGES := $(wildcard $(PACKAGE_DIR)/*.tar.gz)
 EXTRACT_TARGETS := $(addsuffix .done,$(PACKAGES))
 CLEAN_TARGETS := $(addsuffix .clean,$(PACKAGES))
@@ -18,8 +19,8 @@ LIB_DIR = ../libraries
 CPPFLAGS += $(patsubst %,-I%,$(wildcard $(LIB_DIR)/*))
 MOCK_OBJ_NAMES := $(patsubst $(LIB_DIR)/%,%,$(wildcard $(LIB_DIR)/Mock*))
 MOCK_OBJ_NAMES += $(patsubst $(LIB_DIR)/Mock%,%,$(wildcard $(LIB_DIR)/Mock*))
-MOCK_OBJ_DIRS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OUTPUT_DIR)/$(MOCK_OBJ_NAME))
-MOCK_OBJS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OUTPUT_DIR)/$(MOCK_OBJ_NAME)/$(MOCK_OBJ_NAME).o)
+MOCK_OBJ_DIRS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OBJ_DIR)/$(MOCK_OBJ_NAME))
+MOCK_OBJS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OBJ_DIR)/$(MOCK_OBJ_NAME)/$(MOCK_OBJ_NAME).o)
 MOCK_HEADERS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(wildcard $(LIB_DIR)/$(MOCK_OBJ_NAME)/*.h))
 
 # Flags passed to the preprocessor.
@@ -33,7 +34,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TEST_SOURCES := $(wildcard $(USER_DIR)/*.cpp)
-TEST_OBJS := $(patsubst $(USER_DIR)/%.cpp,$(OUTPUT_DIR)/%.o,$(TEST_SOURCES))
+TEST_OBJS := $(patsubst $(USER_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(TEST_SOURCES))
 TEST_EXECUTABLE := $(OUTPUT_DIR)/test
 
 # All Google Test headers.  Usually you shouldn't change this
@@ -46,10 +47,10 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 # Usually you shouldn't tweak such internal variables, indicated by a
 # trailing _.
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
-GTEST_ALL_O = $(OUTPUT_DIR)/gtest-all.o
-GTEST_MAIN_O = $(OUTPUT_DIR)/gtest_main.o
-GTEST_MAIN_A = $(OUTPUT_DIR)/gtest_main.a
-GTEST_A = $(OUTPUT_DIR)/gtest.a
+GTEST_ALL_O = $(OBJ_DIR)/gtest-all.o
+GTEST_MAIN_O = $(OBJ_DIR)/gtest_main.o
+GTEST_MAIN_A = $(OBJ_DIR)/gtest_main.a
+GTEST_A = $(OBJ_DIR)/gtest.a
 
 # default target
 .PHONY: all
@@ -101,7 +102,10 @@ $(INSTALL_DIR):
 $(OUTPUT_DIR):
 	mkdir -p $@
 
-$(MOCK_OBJ_DIRS): | $(OUTPUT_DIR)
+$(OBJ_DIR): | $(OUTPUT_DIR)
+	mkdir -p $@
+
+$(MOCK_OBJ_DIRS): | $(OBJ_DIR)
 	mkdir -p $@
 
 # Package targets
@@ -122,11 +126,11 @@ clean-packages: $(CLEAN_TARGETS)
 	rm -rf $(INSTALL_DIR)
 
 # Build targets
-$(MOCK_OBJS):$(OUTPUT_DIR)/%.o: $(LIB_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(MOCK_OBJ_DIRS)
+$(MOCK_OBJS):$(OBJ_DIR)/%.o: $(LIB_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(MOCK_OBJ_DIRS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(TEST_OBJS):$(OUTPUT_DIR)/%.o: $(USER_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(OUTPUT_DIR)
-# $(TEST_OBJS):$(OUTPUT_DIR)/%.o: $(USER_DIR)/%.cpp $(GTEST_HEADERS) | $(OUTPUT_DIR)
+$(TEST_OBJS):$(OBJ_DIR)/%.o: $(USER_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(OBJ_DIR)
+# $(TEST_OBJS):$(OBJ_DIR)/%.o: $(USER_DIR)/%.cpp $(GTEST_HEADERS) | $(OBJ_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 $(TEST_EXECUTABLE): $(TEST_OBJS) $(MOCK_OBJS) $(GTEST_MAIN_A) | $(OUTPUT_DIR)
