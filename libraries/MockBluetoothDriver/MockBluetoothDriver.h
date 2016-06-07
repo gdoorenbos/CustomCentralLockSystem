@@ -11,8 +11,7 @@ public:
 
     // inherited methods
     bool isDeviceConnected() const;
-    void print(const char* message) const;
-    void printLine(const char* message) const;
+    void sendString(const char* message);
     bool hasMessage() const;
     const char* getMessage();
 
@@ -20,10 +19,11 @@ public:
     void connectDevice();
     void disconnectDevice();
     void sendMessageFromDevice(const char* message);
+    bool hasMessageForClient() const;
+    const char* getMessageForClient();
 
 private:
     void deleteMessageFromDevice();
-    void deleteMessageFromDeviceIfPresent();
     char* makeCopyOfMessageFromDeviceAndDelete();
 
     // DO NOT pass null to these methods 
@@ -32,6 +32,7 @@ private:
 
     bool deviceIsConnected;
     const char* messageFromDevice;
+    const char* messageForClient;
 };
 
 #endif
