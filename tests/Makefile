@@ -17,11 +17,13 @@ GTEST_DIR = $(INSTALL_DIR)/$(GTEST_VERSION)
 USER_DIR = source
 LIB_DIR = ../libraries
 CPPFLAGS += $(patsubst %,-I%,$(wildcard $(LIB_DIR)/*))
-MOCK_OBJ_NAMES := $(patsubst $(LIB_DIR)/%,%,$(wildcard $(LIB_DIR)/Mock*))
-MOCK_OBJ_NAMES += $(patsubst $(LIB_DIR)/Mock%,%,$(wildcard $(LIB_DIR)/Mock*))
-MOCK_OBJ_DIRS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OBJ_DIR)/$(MOCK_OBJ_NAME))
-MOCK_OBJS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(OBJ_DIR)/$(MOCK_OBJ_NAME)/$(MOCK_OBJ_NAME).o)
-MOCK_HEADERS := $(foreach MOCK_OBJ_NAME,$(MOCK_OBJ_NAMES),$(wildcard $(LIB_DIR)/$(MOCK_OBJ_NAME)/*.h))
+# LIB_OBJ_NAMES := $(patsubst $(LIB_DIR)/%,%,$(wildcard $(LIB_DIR)/Mock*))
+# LIB_OBJ_NAMES += $(patsubst $(LIB_DIR)/Mock%,%,$(wildcard $(LIB_DIR)/Mock*))
+LIB_OBJ_NAMES := $(patsubst $(USER_DIR)/%Test.cpp,%,$(wildcard $(USER_DIR)/*Test.cpp))
+LIB_OBJ_NAMES += $(patsubst $(USER_DIR)/Mock%Test.cpp,%,$(wildcard $(USER_DIR)/Mock*Test.cpp))
+LIB_OBJ_DIRS := $(foreach LIB_OBJ_NAME,$(LIB_OBJ_NAMES),$(OBJ_DIR)/$(LIB_OBJ_NAME))
+LIB_OBJS := $(foreach LIB_OBJ_NAME,$(LIB_OBJ_NAMES),$(OBJ_DIR)/$(LIB_OBJ_NAME)/$(LIB_OBJ_NAME).o)
+LIB_HEADERS := $(foreach LIB_OBJ_NAME,$(LIB_OBJ_NAMES),$(wildcard $(LIB_DIR)/$(LIB_OBJ_NAME)/*.h))
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
@@ -72,11 +74,10 @@ help:
 	@echo "    clean-all: 		cleans build artifacts and the $(INSTALL_DIR)/ directory."
 	@echo ""
 
-.PHONY: devhelp
-devhelp:
-	@echo "MOCK_OBJ_NAMES: $(MOCK_OBJ_NAMES)"
-	@echo "MOCK_OBJS: $(MOCK_OBJS)"
-	@echo "MOCK_HEADERS: $(MOCK_HEADERS)"
+.PHONY: devtest
+devtest:
+	@echo "LIB_OBJ_NAMES: $(LIB_OBJ_NAMES)"
+	@echo "LIB_HEADERS: $(LIB_HEADERS)"
 
 # Google test targets
 # For simplicity and to avoid depending on Google Test's
@@ -105,7 +106,7 @@ $(OUTPUT_DIR):
 $(OBJ_DIR): | $(OUTPUT_DIR)
 	mkdir -p $@
 
-$(MOCK_OBJ_DIRS): | $(OBJ_DIR)
+$(LIB_OBJ_DIRS): | $(OBJ_DIR)
 	mkdir -p $@
 
 # Package targets
@@ -126,13 +127,13 @@ clean-packages: $(CLEAN_TARGETS)
 	rm -rf $(INSTALL_DIR)
 
 # Build targets
-$(MOCK_OBJS):$(OBJ_DIR)/%.o: $(LIB_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(MOCK_OBJ_DIRS)
+$(LIB_OBJS):$(OBJ_DIR)/%.o: $(LIB_DIR)/%.cpp $(LIB_HEADERS) $(GTEST_HEADERS) | $(LIB_OBJ_DIRS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(TEST_OBJS):$(OBJ_DIR)/%.o: $(USER_DIR)/%.cpp $(MOCK_HEADERS) $(GTEST_HEADERS) | $(OBJ_DIR)
+$(TEST_OBJS):$(OBJ_DIR)/%.o: $(USER_DIR)/%.cpp $(LIB_HEADERS) $(GTEST_HEADERS) | $(OBJ_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(TEST_EXECUTABLE): $(TEST_OBJS) $(MOCK_OBJS) $(GTEST_MAIN_A) | $(OUTPUT_DIR)
+$(TEST_EXECUTABLE): $(TEST_OBJS) $(LIB_OBJS) $(GTEST_MAIN_A) | $(OUTPUT_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
 .PHONY: build
