@@ -1,11 +1,9 @@
 #include "MockBluetoothDriver.h"
 #include <cstring>
-#include <cstdio>
-#include <cstdlib>
 
 MockBluetoothDriver::MockBluetoothDriver()
-    : deviceIsConnected(false)
-    , messageFromDevice(0)
+    : clientIsConnected(false)
+    , messageFromClient(0)
     , messageForClient(0)
 {
 }
@@ -13,46 +11,32 @@ MockBluetoothDriver::MockBluetoothDriver()
 MockBluetoothDriver::~MockBluetoothDriver()
 {
     if( hasMessage() )
-        deleteMessageFromDevice();
+        deleteMessageFromClient();
+
+    if( hasMessageForClient() )
+        deleteMessageForClient();
 }
 
-bool MockBluetoothDriver::isDeviceConnected() const
+bool MockBluetoothDriver::isClientConnected() const
 {
-    return deviceIsConnected;
+    return clientIsConnected;
 }
 
 void MockBluetoothDriver::sendString(const char* message)
 {
-    if( messageForClient == 0 )
-    {
-        messageForClient = makeCopyOfStringOnHeap(message);
-    }
-    else
-    {
-        // need to combine the strings
-        int newStringLength = strlen(messageForClient) + strlen(message) + 1;
-        char* combinedStr = new char[newStringLength];
-        memset(combinedStr, 0, newStringLength);
-        strncpy(combinedStr, messageForClient, strlen(messageForClient));
-        strcat(combinedStr, message);
-
-        // delete old string
-        delete[] messageForClient;
-
-        // assign new string
-        messageForClient = combinedStr;
-    }
+    if( message != 0 )
+        updateMessageForClient(message);
 }
 
 bool MockBluetoothDriver::hasMessage() const
 {
-    return (messageFromDevice != 0);
+    return (messageFromClient != 0);
 }
 
 const char* MockBluetoothDriver::getMessage()
 {
     if( hasMessage() )
-        return makeCopyOfMessageFromDeviceAndDelete();
+        return makeCopyOfMessageFromClientAndDelete();
     else
         return makeCopyOfStringOnHeap("");
 }
@@ -65,73 +49,86 @@ bool MockBluetoothDriver::hasMessageForClient() const
 const char* MockBluetoothDriver::getMessageForClient()
 {
     if( hasMessageForClient() )
-    {
-        const char* returnStr = makeCopyOfStringOnHeap(messageForClient);
-        delete[] messageForClient;
-        messageForClient = 0;
-        return returnStr;
-    }
+        return makeCopyOfMessageForClientAndDelete();
     else
         return makeCopyOfStringOnHeap("");
 }
 
-void MockBluetoothDriver::connectDevice()
+void MockBluetoothDriver::connectClient()
 {
-    deviceIsConnected = true;
+    clientIsConnected = true;
 }
 
-void MockBluetoothDriver::disconnectDevice()
+void MockBluetoothDriver::disconnectClient()
 {
-    deviceIsConnected = false;
+    clientIsConnected = false;
 }
 
-void MockBluetoothDriver::sendMessageFromDevice(const char* message)
+void MockBluetoothDriver::sendMessageFromClient(const char* message)
 {
     if( message != 0 )
-        updateMessageFromDevice(message);
+        updateMessageFromClient(message);
 }
 
-void MockBluetoothDriver::deleteMessageFromDevice()
+void MockBluetoothDriver::deleteMessageFromClient()
 {
-    delete [] messageFromDevice;
-    messageFromDevice = 0;
+    delete [] messageFromClient;
+    messageFromClient = 0;
 }
 
-char* MockBluetoothDriver::makeCopyOfStringOnHeap(const char* originalStr) const
+void MockBluetoothDriver::deleteMessageForClient()
+{
+    delete[] messageForClient;
+    messageForClient = 0;
+}
+
+const char* MockBluetoothDriver::makeCopyOfStringOnHeap(const char* originalStr) const
 {
     char* newStr = new char[strlen(originalStr)+1];
     strncpy(newStr, originalStr, strlen(originalStr)+1);
     return newStr;
 }
 
-char* MockBluetoothDriver::makeCopyOfMessageFromDeviceAndDelete()
+const char* MockBluetoothDriver::makeCopyOfMessageFromClientAndDelete()
 {
-    char* returnStr = makeCopyOfStringOnHeap(messageFromDevice);
-    deleteMessageFromDevice();
+    const char* returnStr = makeCopyOfStringOnHeap(messageFromClient);
+    deleteMessageFromClient();
     return returnStr;
 }
 
-void MockBluetoothDriver::updateMessageFromDevice(const char* message)
+const char* MockBluetoothDriver::makeCopyOfMessageForClientAndDelete()
 {
-    if( messageFromDevice == 0 )
-    {
-        messageFromDevice = makeCopyOfStringOnHeap(message);
-    }
-    // else
-    // {
-    //     // need to concatenate the strings together
-    //     // new string will be of the form: string1 + '\n' + string2
-    //     int newStringLength = strlen(messageFromDevice) + 1 + strlen(message) + 1;
-    //     char* combinedStr = new char[newStringLength];
-    //     memset(combinedStr, 0, newStringLength);
-    //     strncpy(combinedStr, messageFromDevice, strlen(messageFromDevice));
-    //     strcat(combinedStr, "\n");
-    //     strcat(combinedStr, message);
+    const char* returnStr = makeCopyOfStringOnHeap(messageForClient);
+    deleteMessageForClient();
+    return returnStr;
+}
 
-    //     // delete old string
-    //     delete[] messageFromDevice;
+void MockBluetoothDriver::updateMessageFromClient(const char* message)
+{
+    if( messageFromClient == 0 )
+        messageFromClient = makeCopyOfStringOnHeap(message);
+}
 
-    //     // assign new string
-    //     messageFromDevice = combinedStr;
-    // }
+void MockBluetoothDriver::updateMessageForClient(const char* message)
+{
+    if( messageForClient == 0 )
+        messageForClient = makeCopyOfStringOnHeap(message);
+    else
+        appendToMessageForClient(message);
+}
+
+void MockBluetoothDriver::appendToMessageForClient(const char* message)
+{
+    // create new string for combining
+    int combinedStrLength = strlen(messageForClient) + strlen(message) + 1;
+    char* combinedStr = new char[combinedStrLength];
+    memset(combinedStr, 0, combinedStrLength);
+    strncpy(combinedStr, messageForClient, strlen(messageForClient));
+    strcat(combinedStr, message);
+
+    // delete old string
+    delete[] messageForClient;
+
+    // assign new string
+    messageForClient = combinedStr;
 }

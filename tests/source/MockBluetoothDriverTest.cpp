@@ -1,39 +1,39 @@
 #include "gtest/gtest.h"
 #include "MockBluetoothDriver.h"
 
-TEST(MockBluetoothDriver, noDeviceConnectedOnInitialization)
+TEST(MockBluetoothDriver, noClientConnectedOnInitialization)
 {
 	MockBluetoothDriver bluetooth;
-	EXPECT_FALSE(bluetooth.isDeviceConnected());
+	EXPECT_FALSE(bluetooth.isClientConnected());
 }
 
-TEST(MockBluetoothDriver, flagSetWhenDeviceConnected)
+TEST(MockBluetoothDriver, flagSetWhenClientConnected)
 {
 	MockBluetoothDriver bluetooth;
-	bluetooth.connectDevice();
-	EXPECT_TRUE(bluetooth.isDeviceConnected());
+	bluetooth.connectClient();
+	EXPECT_TRUE(bluetooth.isClientConnected());
 }
 
-TEST(MockBluetoothDriver, flagClearedWhenDeviceDisconnected)
+TEST(MockBluetoothDriver, flagClearedWhenClientDisconnected)
 {
 	MockBluetoothDriver bluetooth;
-	bluetooth.connectDevice();
-	bluetooth.disconnectDevice();
-	EXPECT_FALSE(bluetooth.isDeviceConnected());
+	bluetooth.connectClient();
+	bluetooth.disconnectClient();
+	EXPECT_FALSE(bluetooth.isClientConnected());
 }
 
-TEST(MockBluetoothDriver, repetitiveDeviceConnectsAndDisconnects)
+TEST(MockBluetoothDriver, repetitiveClientConnectsAndDisconnects)
 {
 	MockBluetoothDriver bluetooth;
-	EXPECT_FALSE(bluetooth.isDeviceConnected());
-	bluetooth.connectDevice();
-	EXPECT_TRUE(bluetooth.isDeviceConnected());
-	bluetooth.disconnectDevice();
-	EXPECT_FALSE(bluetooth.isDeviceConnected());
-	bluetooth.connectDevice();
-	EXPECT_TRUE(bluetooth.isDeviceConnected());
-	bluetooth.disconnectDevice();
-	EXPECT_FALSE(bluetooth.isDeviceConnected());
+	EXPECT_FALSE(bluetooth.isClientConnected());
+	bluetooth.connectClient();
+	EXPECT_TRUE(bluetooth.isClientConnected());
+	bluetooth.disconnectClient();
+	EXPECT_FALSE(bluetooth.isClientConnected());
+	bluetooth.connectClient();
+	EXPECT_TRUE(bluetooth.isClientConnected());
+	bluetooth.disconnectClient();
+	EXPECT_FALSE(bluetooth.isClientConnected());
 }
 
 TEST(MockBluetoothDriver, singleClientMessageSentAndReceived)
@@ -42,7 +42,7 @@ TEST(MockBluetoothDriver, singleClientMessageSentAndReceived)
 	const char* clientMessage = "hello world";
 
 	EXPECT_FALSE(bluetooth.hasMessage());
-	bluetooth.sendMessageFromDevice(clientMessage);
+	bluetooth.sendMessageFromClient(clientMessage);
 	EXPECT_TRUE(bluetooth.hasMessage());
 	const char* reportedMessage = bluetooth.getMessage();
 	EXPECT_FALSE(bluetooth.hasMessage());
@@ -51,7 +51,7 @@ TEST(MockBluetoothDriver, singleClientMessageSentAndReceived)
 	delete[] reportedMessage;
 }
 
-/* When a client device sends a second message before the first one
+/* When a client sends a second message before the first one
  * gets read, the second message should be ignored. 
  */
 TEST(MockBluetoothDriver, twoMessagesFromClientBeforeRead)
@@ -61,9 +61,9 @@ TEST(MockBluetoothDriver, twoMessagesFromClientBeforeRead)
 	MockBluetoothDriver bluetooth;
 
 	EXPECT_FALSE(bluetooth.hasMessage());
-	bluetooth.sendMessageFromDevice(firstMessage);
+	bluetooth.sendMessageFromClient(firstMessage);
 	EXPECT_TRUE(bluetooth.hasMessage());
-	bluetooth.sendMessageFromDevice(secondMessage);
+	bluetooth.sendMessageFromClient(secondMessage);
 	EXPECT_TRUE(bluetooth.hasMessage());
 	const char* reportedMessage = bluetooth.getMessage();
 	EXPECT_FALSE(bluetooth.hasMessage());
@@ -79,14 +79,14 @@ TEST(MockBluetoothDriver, twoMessagesFromClientReadOnTime)
 	MockBluetoothDriver bluetooth;
 
 	EXPECT_FALSE(bluetooth.hasMessage());
-	bluetooth.sendMessageFromDevice(firstMessage);
+	bluetooth.sendMessageFromClient(firstMessage);
 	EXPECT_TRUE(bluetooth.hasMessage());
 	const char* reportedMessage = bluetooth.getMessage();
 	EXPECT_FALSE(bluetooth.hasMessage());
 	EXPECT_STREQ(reportedMessage, firstMessage);
 	delete[] reportedMessage;
 
-	bluetooth.sendMessageFromDevice(secondMessage);
+	bluetooth.sendMessageFromClient(secondMessage);
 	EXPECT_TRUE(bluetooth.hasMessage());
 	reportedMessage = bluetooth.getMessage();
 	EXPECT_FALSE(bluetooth.hasMessage());

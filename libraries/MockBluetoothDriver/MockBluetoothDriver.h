@@ -9,29 +9,39 @@ public:
     MockBluetoothDriver();
     ~MockBluetoothDriver();
 
-    // inherited methods
-    bool isDeviceConnected() const;
+    // client connection
+    bool isClientConnected() const;
+    void connectClient();
+    void disconnectClient();
+    
+    // messages for client
     void sendString(const char* message);
-    bool hasMessage() const;
-    const char* getMessage();
-
-    // mock methods
-    void connectDevice();
-    void disconnectDevice();
-    void sendMessageFromDevice(const char* message);
     bool hasMessageForClient() const;
     const char* getMessageForClient();
 
+    // messages from client
+    void sendMessageFromClient(const char* message);
+    bool hasMessage() const;
+    const char* getMessage();
+
 private:
-    void deleteMessageFromDevice();
-    char* makeCopyOfMessageFromDeviceAndDelete();
+    // message from client
+    void deleteMessageFromClient();
+    void updateMessageFromClient(const char* message);
+    const char* makeCopyOfMessageFromClientAndDelete();
 
-    // DO NOT pass null to these methods 
-    char* makeCopyOfStringOnHeap(const char* original) const;
-    void updateMessageFromDevice(const char* message);
+    // message for client
+    void deleteMessageForClient();
+    void updateMessageForClient(const char* message);
+    void appendToMessageForClient(const char* message);
+    const char* makeCopyOfMessageForClientAndDelete();
 
-    bool deviceIsConnected;
-    const char* messageFromDevice;
+    // helper methods
+    const char* makeCopyOfStringOnHeap(const char* original) const;
+
+    // private members
+    bool clientIsConnected;
+    const char* messageFromClient;
     const char* messageForClient;
 };
 
