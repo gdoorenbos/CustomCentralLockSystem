@@ -125,3 +125,24 @@ TEST(MockBluetoothDriver, twoMessagesSentToClient)
 	EXPECT_STREQ(reportedMessage, expectedMessage);
 	delete[] reportedMessage;
 }
+
+TEST(MockBluetoothDriver, sendThreeMessagesToClient)
+{
+	const char* firstMessage = "foo";
+	const char* secondMessage = "bar";
+	const char* thirdMessage = "ded";
+	const char* expectedMessage = "foobarded";
+	MockBluetoothDriver bluetooth;
+
+	EXPECT_FALSE(bluetooth.hasMessageForClient());
+	bluetooth.sendString(firstMessage);
+	EXPECT_TRUE(bluetooth.hasMessageForClient());
+	bluetooth.sendString(secondMessage);
+	EXPECT_TRUE(bluetooth.hasMessageForClient());
+	bluetooth.sendString(thirdMessage);
+	EXPECT_TRUE(bluetooth.hasMessageForClient());
+	const char* reportedMessage = bluetooth.getMessageForClient();
+	EXPECT_FALSE(bluetooth.hasMessageForClient());
+	EXPECT_STREQ(reportedMessage, expectedMessage);
+	delete[] reportedMessage;
+}
