@@ -31,8 +31,8 @@ private:
     void resetBluetoothConnectionParameters();
 
     // members
-    const BluetoothDriver* bluetooth;
-    const PowerLocksDriver* locks;
+    BluetoothDriver* bluetooth;
+    PowerLocksDriver* locks;
     const PushButtonDriver* lockButton;
     const PushButtonDriver* unlockButton;
     bool sentGreetingMessage;

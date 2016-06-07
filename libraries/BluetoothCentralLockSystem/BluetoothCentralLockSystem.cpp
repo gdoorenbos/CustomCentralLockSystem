@@ -3,6 +3,7 @@
 #include <PowerLocksDriver.h>
 #include <PushButtonDriver.h>
 #include "UserLogin.h"
+#include <cstring>
 
 BluetoothCentralLockSystem::BluetoothCentralLockSystem( BluetoothDriver* bluetoothDriver
                                                       , PowerLocksDriver* locksDriver
@@ -25,20 +26,26 @@ BluetoothCentralLockSystem::~BluetoothCentralLockSystem()
 
 void BluetoothCentralLockSystem::sendGreetingMessage()
 {
-    bluetooth->printLine("________            ________");
-    bluetooth->printLine("\       \___/\/\___/       /");
-    bluetooth->printLine(" \                        / ");
-    bluetooth->printLine("  \__________  __________/  ");
-    bluetooth->printLine("             \/             ");
+    //bluetooth->sendString("________            ________\n");
+    //bluetooth->sendString("\       \___/\/\___/       /\n");
+    //bluetooth->sendString(" \                        / \n");
+    //bluetooth->sendString("  \__________  __________/  \n");
+    //bluetooth->sendString("             \/             \n");
+    
+    bluetooth->sendString("________            ________\n");
+    bluetooth->sendString("\\       \\___/\\/\\___/       /\n");
+    bluetooth->sendString(" \\                        / \n");
+    bluetooth->sendString("  \\__________  __________/  \n");
+    bluetooth->sendString("             \\/             \n");
     sentGreetingMessage = true;
 }
 
 void BluetoothCentralLockSystem::sendPrompt()
 {
     if( userLoggedIn )
-        bluetooth->print("#");
+        bluetooth->sendString("#");
     else
-        bluetooth->print(">");
+        bluetooth->sendString(">");
 }
 
 void BluetoothCentralLockSystem::handleBluetoothMessage()
@@ -48,11 +55,11 @@ void BluetoothCentralLockSystem::handleBluetoothMessage()
         if( requestingUsername )
         {
             const char* currentUser = bluetooth->getMessage();
-            if( currentUser == ALLOWED_USER )
+            if( strcmp(currentUser, ALLOWED_USER) == 0 )
             {
                 requestingUsername = false;
                 requestingPassword = true;
-                bluetooth->print("Enter password: ");
+                bluetooth->sendString("Enter password: ");
             }
             else
             {
@@ -62,16 +69,16 @@ void BluetoothCentralLockSystem::handleBluetoothMessage()
         else if( requestingPassword )
         {
             const char* enteredPassword = bluetooth->getMessage();
-            if( enteredPassword == ALLOWED_USER_PASSWORD )
+            if( strcmp(enteredPassword, ALLOWED_USER_PASSWORD) == 0 )
             {
                 userLoggedIn = true;
                 requestingPassword = false;
-                bluetooth->printLine("Welcome Back, Master Wayne");
+                bluetooth->sendString("Welcome Back, Master Wayne\n");
                 sendPrompt();
             }
             else
             {
-                bluetooth->printLine("Denied");
+                bluetooth->sendString("Denied\n");
                 sendPrompt();
                 requestingUsername = true;
                 requestingPassword = false;
@@ -82,11 +89,11 @@ void BluetoothCentralLockSystem::handleBluetoothMessage()
     {
         // awaiting commands to either lock or unlock the doors
         const char* command = bluetooth->getMessage();
-        if( command == "lock" )
+        if( strcmp(command, "lock") == 0 )
         {
             locks->lockDoors();
         }
-        else if( command == "unlock" )
+        else if( strcmp(command, "unlock") == 0 )
         {
             locks->unlockDoors();
         }
@@ -111,7 +118,7 @@ void BluetoothCentralLockSystem::run()
     {
         locks->unlockDoors();
     }
-    else if( bluetooth->isDeviceConnected() )
+    else if( bluetooth->isClientConnected() )
     {
         if( !userLoggedIn )
         {
@@ -135,7 +142,7 @@ void BluetoothCentralLockSystem::run()
         }
     }
 
-    if( !bluetooth->isDeviceConnected() && userLoggedIn )
+    if( !bluetooth->isClientConnected() && userLoggedIn )
     {
         resetBluetoothConnectionParameters();
     }
