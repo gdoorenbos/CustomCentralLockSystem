@@ -5,6 +5,18 @@
 #include "BluetoothCentralLockSystem.h"
 #include "UserLogin.h"
 
+/*
+General process for cls:
+1. connect client to bluetooth
+2. cls sends greeting and prompt
+3. client enters username
+4. cls sends password prompt
+5. client enters password
+6. cls sends confirmation
+7. client enters command to either lock or unlock doors
+8. cls locks/unlocks doors and sends user confirmation
+*/
+
 // These may change. update as needed. 
 const char* greetingMessage = "________            ________\n\\       \\___/\\/\\___/       /\n \\                        /\n  \\__________  __________/\n             \\/\n>";
 const char* basePrompt = ">";
@@ -12,8 +24,19 @@ const char* userPrompt = "#";
 const char* passwordPrompt = "Enter password: ";
 const char* loginSuccessfulMessage = "Welcome Back, Master Wayne\n#";
 const char* loginUnsuccessfulMessage = "Denied\n>";
+const char* lockDoorsCommand = "lockdoors";
+const char* unlockDoorsCommand = "unlockdoors";
+const char* lockDoorsReponse = "success!\n#";
+const char* unlockDoorsResponse = "success!\n#";
 
 // utility methods
+void expectMessageForClient( const char* expectedMessage, MockBluetoothDriver &bluetooth )
+{
+	const char* reportedStr = bluetooth.getMessageForClient();
+	EXPECT_STREQ(expectedMessage, reportedStr);
+	delete[] reportedStr;
+}
+
 void expectResponseForMessageFromClient( const char* messageFromClient
 									   , const char* expectedResponse
 									   , BluetoothCentralLockSystem &cls
@@ -21,9 +44,25 @@ void expectResponseForMessageFromClient( const char* messageFromClient
 {
 	bluetooth.sendMessageFromClient(messageFromClient);
 	cls.run();
-	const char* reportedStr = bluetooth.getMessageForClient();
-	EXPECT_STREQ(expectedResponse, reportedStr);
-	delete[] reportedStr;
+	cls.run();
+	cls.run();
+	expectMessageForClient(expectedResponse, bluetooth);
+}
+
+void sendThreeCarriageReturns( const char* expectedPrompt, BluetoothCentralLockSystem &cls, MockBluetoothDriver &bluetooth )
+{
+	for(int i=0; i<3; ++i)
+		expectResponseForMessageFromClient("", expectedPrompt, cls, bluetooth);
+}
+
+void connectClientAndLogIn( BluetoothCentralLockSystem &cls, MockBluetoothDriver &bluetooth )
+{
+	bluetooth.connectClient();
+	cls.run();
+	expectMessageForClient(greetingMessage, bluetooth);
+	expectResponseForMessageFromClient(ALLOWED_USER, passwordPrompt, cls, bluetooth);
+	expectResponseForMessageFromClient(ALLOWED_USER_PASSWORD, loginSuccessfulMessage, cls, bluetooth);
+	sendThreeCarriageReturns(userPrompt, cls, bluetooth);
 }
 
 TEST(BluetoothCentralLockSystemTest, lockAndUnlockButtonsWork)
@@ -74,30 +113,9 @@ TEST(BluetoothCentralLockSystem, successfulClientAuthentication)
 	EXPECT_STREQ(reportedStr, greetingMessage);
 	delete[] reportedStr;
 
-	// bluetooth.sendMessageFromClient(ALLOWED_USER);
-	// cls.run();
-	// reportedStr = bluetooth.getMessageForClient();
-	// EXPECT_STREQ(reportedStr, passwordPrompt);
-	// delete[] reportedStr;
 	expectResponseForMessageFromClient(ALLOWED_USER, passwordPrompt, cls, bluetooth);
-
-	// bluetooth.sendMessageFromClient(ALLOWED_USER_PASSWORD);
-	// cls.run();
-	// reportedStr = bluetooth.getMessageForClient();
-	// EXPECT_STREQ(reportedStr, loginSuccessfulMessage);
-	// delete[] reportedStr;
 	expectResponseForMessageFromClient(ALLOWED_USER_PASSWORD, loginSuccessfulMessage, cls, bluetooth);
-
-	// add some carriage returns for good measure
-	for(int i=0; i<3; ++i)
-	{
-		// bluetooth.sendMessageFromClient("");
-		// cls.run();
-		// reportedStr = bluetooth.getMessageForClient();
-		// EXPECT_STREQ(reportedStr, userPrompt);
-		// delete[] reportedStr;
-		expectResponseForMessageFromClient("", userPrompt, cls, bluetooth);
-	}
+	sendThreeCarriageReturns(userPrompt, cls, bluetooth);
 }
 
 TEST(BluetoothCentralLockSystem, unsuccessfulClientAuthentication)
@@ -108,50 +126,60 @@ TEST(BluetoothCentralLockSystem, unsuccessfulClientAuthentication)
 	MockPushButtonDriver unlockButton;
 	BluetoothCentralLockSystem cls(&bluetooth, &locks, &lockButton, &unlockButton);
 
+	// unsuccessful attempt to connect and login
 	bluetooth.connectClient();
 	cls.run();
 	cls.run();
 	cls.run();
-	const char* reportedStr = bluetooth.getMessageForClient();
-	EXPECT_STREQ(reportedStr, greetingMessage);
-	delete[] reportedStr;
-
-	for(int i= 0; i<3; ++i)
-	{
-		// bluetooth.sendMessageFromClient("");
-		// cls.run();
-		// reportedStr = bluetooth.getMessageForClient();
-		// EXPECT_STREQ(reportedStr, basePrompt);
-		// delete[] reportedStr;
-		expectResponseForMessageFromClient("", basePrompt, cls, bluetooth);
-	}
-
-	bluetooth.sendMessageFromClient("ls");
-	cls.run();
-	cls.run();
-	cls.run();
-	reportedStr = bluetooth.getMessageForClient();
-	EXPECT_STREQ(reportedStr, basePrompt);
-	delete[] reportedStr;
-
-	bluetooth.sendMessageFromClient("pwd");
-	cls.run();
-	cls.run();
-	cls.run();
-	reportedStr = bluetooth.getMessageForClient();
-	EXPECT_STREQ(reportedStr, basePrompt);
-	delete[] reportedStr;
-
-	// bluetooth.sendMessageFromClient(ALLOWED_USER);
-	// cls.run();
-	// reportedStr = bluetooth.getMessageForClient();
-	// EXPECT_STREQ(reportedStr, passwordPrompt);
+	expectMessageForClient(greetingMessage, bluetooth);
+	sendThreeCarriageReturns(basePrompt, cls, bluetooth);
+	expectResponseForMessageFromClient("ls", basePrompt, cls, bluetooth);
+	expectResponseForMessageFromClient("pwd", basePrompt, cls, bluetooth);
 	expectResponseForMessageFromClient(ALLOWED_USER, passwordPrompt, cls, bluetooth);
-
 	expectResponseForMessageFromClient("badpassword", loginUnsuccessfulMessage, cls, bluetooth);
+	sendThreeCarriageReturns(basePrompt, cls, bluetooth);
+	bluetooth.disconnectClient();
 
-	for(int i=0; i<3; ++i)
-	{
-		expectResponseForMessageFromClient("", basePrompt, cls, bluetooth);
-	}
+	// make sure a valid user can log in afterwards
+	cls.run();
+	connectClientAndLogIn(cls, bluetooth);
+}
+
+TEST(BluetoothCentralLockSystem, gracefulUserLogout)
+{
+	MockBluetoothDriver bluetooth;
+	MockPowerLocksDriver locks;
+	MockPushButtonDriver lockButton;
+	MockPushButtonDriver unlockButton;
+	BluetoothCentralLockSystem cls(&bluetooth, &locks, &lockButton, &unlockButton);
+
+	// first, log in
+	connectClientAndLogIn(cls, bluetooth);
+
+	// disconnect a client and wait some time
+	bluetooth.disconnectClient();
+	for(int i=0; i<10; ++i)
+		cls.run();
+
+	// logout is considered graceful if we can successfully login again
+	connectClientAndLogIn(cls, bluetooth);
+}
+
+TEST(BluetoothCentralLockSystem, bluetoothUserCanLockAndUnlockDoors)
+{
+	MockBluetoothDriver bluetooth;
+	MockPowerLocksDriver locks;
+	MockPushButtonDriver lockButton;
+	MockPushButtonDriver unlockButton;
+	BluetoothCentralLockSystem cls(&bluetooth, &locks, &lockButton, &unlockButton);
+
+	connectClientAndLogIn(cls, bluetooth);
+	expectResponseForMessageFromClient(lockDoorsCommand, lockDoorsReponse, cls, bluetooth);
+	EXPECT_TRUE(locks.areDoorsLocked());
+	expectResponseForMessageFromClient(unlockDoorsCommand, unlockDoorsResponse, cls, bluetooth);
+	EXPECT_FALSE(locks.areDoorsLocked());
+	expectResponseForMessageFromClient(lockDoorsCommand, lockDoorsReponse, cls, bluetooth);
+	EXPECT_TRUE(locks.areDoorsLocked());
+	expectResponseForMessageFromClient(unlockDoorsCommand, unlockDoorsResponse, cls, bluetooth);
+	EXPECT_FALSE(locks.areDoorsLocked());
 }

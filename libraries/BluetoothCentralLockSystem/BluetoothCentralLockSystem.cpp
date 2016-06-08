@@ -5,6 +5,14 @@
 #include "UserLogin.h"
 #include <cstring>
 
+/* Greeting message:
+________            ________
+\       \___/\/\___/       /
+ \                        /
+  \__________  __________/
+             \/
+*/
+
 BluetoothCentralLockSystem::BluetoothCentralLockSystem( BluetoothDriver* bluetoothDriver
                                                       , PowerLocksDriver* locksDriver
                                                       , PushButtonDriver* lockButton
@@ -17,6 +25,16 @@ BluetoothCentralLockSystem::BluetoothCentralLockSystem( BluetoothDriver* bluetoo
     , requestingUsername(false)
     , requestingPassword(false)
     , userLoggedIn(false)
+    , greetingMessage("________            ________\n\\       \\___/\\/\\___/       /\n \\                        /\n  \\__________  __________/\n             \\/\n")
+    , basePrompt(">")
+    , userPrompt("#")
+    , passwordPrompt("Enter password: ")
+    , loginSuccessfulMessage("Welcome Back, Master Wayne\n")
+    , loginUnsuccessfulMessage("Denied\n")
+    , lockDoorsCommand("lockdoors")
+    , unlockDoorsCommand("unlockdoors")
+    , lockDoorsResponse("success!\n")
+    , unlockDoorsResponse("success!\n")
 {
 }
 
@@ -26,26 +44,13 @@ BluetoothCentralLockSystem::~BluetoothCentralLockSystem()
 
 void BluetoothCentralLockSystem::sendGreetingMessage()
 {
-    //bluetooth->sendString("________            ________\n");
-    //bluetooth->sendString("\       \___/\/\___/       /\n");
-    //bluetooth->sendString(" \                        / \n");
-    //bluetooth->sendString("  \__________  __________/  \n");
-    //bluetooth->sendString("             \/             \n");
-    
-    bluetooth->sendString("________            ________\n");
-    bluetooth->sendString("\\       \\___/\\/\\___/       /\n");
-    bluetooth->sendString(" \\                        /\n");
-    bluetooth->sendString("  \\__________  __________/\n");
-    bluetooth->sendString("             \\/\n");
+    bluetooth->sendString(greetingMessage);
     sentGreetingMessage = true;
 }
 
 void BluetoothCentralLockSystem::sendPrompt()
 {
-    if( userLoggedIn )
-        bluetooth->sendString("#");
-    else
-        bluetooth->sendString(">");
+    bluetooth->sendString(userLoggedIn ? userPrompt : basePrompt);
 }
 
 void BluetoothCentralLockSystem::handleBluetoothMessage()
@@ -59,7 +64,7 @@ void BluetoothCentralLockSystem::handleBluetoothMessage()
             {
                 requestingUsername = false;
                 requestingPassword = true;
-                bluetooth->sendString("Enter password: ");
+                bluetooth->sendString(passwordPrompt);
             }
             else
             {
@@ -73,12 +78,12 @@ void BluetoothCentralLockSystem::handleBluetoothMessage()
             {
                 userLoggedIn = true;
                 requestingPassword = false;
-                bluetooth->sendString("Welcome Back, Master Wayne\n");
+                bluetooth->sendString(loginSuccessfulMessage);
                 sendPrompt();
             }
             else
             {
-                bluetooth->sendString("Denied\n");
+                bluetooth->sendString(loginUnsuccessfulMessage);
                 sendPrompt();
                 requestingUsername = true;
                 requestingPassword = false;
@@ -89,13 +94,15 @@ void BluetoothCentralLockSystem::handleBluetoothMessage()
     {
         // awaiting commands to either lock or unlock the doors
         const char* command = bluetooth->getMessage();
-        if( strcmp(command, "lock") == 0 )
+        if( strcmp(command, lockDoorsCommand) == 0 )
         {
             locks->lockDoors();
+            bluetooth->sendString(lockDoorsResponse);
         }
-        else if( strcmp(command, "unlock") == 0 )
+        else if( strcmp(command, unlockDoorsCommand) == 0 )
         {
             locks->unlockDoors();
+            bluetooth->sendString(unlockDoorsResponse);
         }
         sendPrompt();
     }
@@ -143,7 +150,7 @@ void BluetoothCentralLockSystem::run()
         }
     }
 
-    if( !bluetooth->isClientConnected() && userLoggedIn )
+    if( !bluetooth->isClientConnected() )
     {
         resetBluetoothConnectionParameters();
     }
