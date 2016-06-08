@@ -34,9 +34,9 @@ void BluetoothCentralLockSystem::sendGreetingMessage()
     
     bluetooth->sendString("________            ________\n");
     bluetooth->sendString("\\       \\___/\\/\\___/       /\n");
-    bluetooth->sendString(" \\                        / \n");
-    bluetooth->sendString("  \\__________  __________/  \n");
-    bluetooth->sendString("             \\/             \n");
+    bluetooth->sendString(" \\                        /\n");
+    bluetooth->sendString("  \\__________  __________/\n");
+    bluetooth->sendString("             \\/\n");
     sentGreetingMessage = true;
 }
 
@@ -97,6 +97,7 @@ void BluetoothCentralLockSystem::handleBluetoothMessage()
         {
             locks->unlockDoors();
         }
+        sendPrompt();
     }
 }
 
