@@ -13,6 +13,19 @@ ________            ________
              \/
 */
 
+// utility class for dealing with strings from the bluetoothDriver
+class SmartCharPtr
+{
+public:
+    SmartCharPtr(const char* ptr) : _ptr(ptr) {}
+    ~SmartCharPtr() {delete[] _ptr;}
+    const char* pointer() {return _ptr;}
+
+private:
+    SmartCharPtr(); // intentionally not implemented
+    const char* _ptr;
+};
+
 BluetoothCentralLockSystem::BluetoothCentralLockSystem( BluetoothDriver* bluetoothDriver
                                                       , PowerLocksDriver* locksDriver
                                                       , PushButtonDriver* lockButton
@@ -102,14 +115,13 @@ void BluetoothCentralLockSystem::sendLoginUnsuccessfulMessage()
 
 void BluetoothCentralLockSystem::handleUserCommands()
 {
-    const char* command = bluetooth->getMessage();
-    if( strcmp(command, lockDoorsCommand) == 0 )
+    SmartCharPtr command = bluetooth->getMessage();
+    if( strcmp(command.pointer(), lockDoorsCommand) == 0 )
         lockDoorsAndNotifyClient();
-    else if( strcmp(command, unlockDoorsCommand) == 0 )
+    else if( strcmp(command.pointer(), unlockDoorsCommand) == 0 )
         unlockDoorsAndNotifyClient();
 
     sendPrompt();
-    delete[] command;
 }
 
 void BluetoothCentralLockSystem::lockDoorsAndNotifyClient()
@@ -141,11 +153,8 @@ void BluetoothCentralLockSystem::sendPrompt()
 
 bool BluetoothCentralLockSystem::bluetoothMessageEquals(const char* str)
 {
-    const char* message = bluetooth->getMessage();
-    int result = strcmp(message, str);
-    delete[] message;
-
-    return (result == 0);
+    SmartCharPtr message = bluetooth->getMessage();
+    return (strcmp(message.pointer(), str) == 0);
 }
 
 bool BluetoothCentralLockSystem::needToResetClientState()
