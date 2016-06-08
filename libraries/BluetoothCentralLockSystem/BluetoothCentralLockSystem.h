@@ -25,20 +25,38 @@ private:
     BluetoothCentralLockSystem();
 
     // methods
-    void sendGreetingMessage();
+    void handleBluetoothClient();
+    void checkEnteredUsername();
+    void checkEnteredPassword();
+    void handleUserCommands();
     void sendPrompt();
-    void handleBluetoothMessage();
-    void resetBluetoothConnectionParameters();
+    void sendGreetingMessage();
+    void sendPasswordPrompt();
+    void sendLoginSuccessfulMessage();
+    void sendLoginUnsuccessfulMessage();
+    void lockDoorsAndNotifyClient();
+    void unlockDoorsAndNotifyClient();
+
+    /** 
+     * Returns true if the c string returned by bluetooth->getMessage() equals the 
+     * string given by str in value
+     */
+    bool bluetoothMessageEquals(const char* str);
 
     // members
     BluetoothDriver* bluetooth;
     PowerLocksDriver* locks;
     const PushButtonDriver* lockButton;
     const PushButtonDriver* unlockButton;
-    bool sentGreetingMessage;
-    bool requestingUsername;
-    bool requestingPassword;
-    bool userLoggedIn;
+
+    enum BluetoothClientState
+    {
+        stateSendGreetingMessage,
+        stateRequestUsername,
+        stateRequestPassword,
+        stateUserLoggedIn
+    } clientState;
+    bool needToResetClientState();
 
     // string constants
     const char* greetingMessage;

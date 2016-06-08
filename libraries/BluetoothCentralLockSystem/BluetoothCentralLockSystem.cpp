@@ -21,10 +21,7 @@ BluetoothCentralLockSystem::BluetoothCentralLockSystem( BluetoothDriver* bluetoo
     , locks(locksDriver)
     , lockButton(lockButton)
     , unlockButton(unlockButton)
-    , sentGreetingMessage(false)
-    , requestingUsername(false)
-    , requestingPassword(false)
-    , userLoggedIn(false)
+    , clientState(stateSendGreetingMessage)
     , greetingMessage("________            ________\n\\       \\___/\\/\\___/       /\n \\                        /\n  \\__________  __________/\n             \\/\n")
     , basePrompt(">")
     , userPrompt("#")
@@ -42,116 +39,118 @@ BluetoothCentralLockSystem::~BluetoothCentralLockSystem()
 {
 }
 
+void BluetoothCentralLockSystem::run()
+{
+    if( lockButton->isPressed() )
+        locks->lockDoors();
+    else if( unlockButton->isPressed() )
+        locks->unlockDoors();
+    else if( bluetooth->isClientConnected() )
+        handleBluetoothClient();
+
+    if( needToResetClientState() )
+        clientState = stateSendGreetingMessage;
+}
+
+void BluetoothCentralLockSystem::handleBluetoothClient()
+{
+    if( clientState == stateSendGreetingMessage )
+        sendGreetingMessage();
+    else if( clientState == stateRequestUsername && bluetooth->hasMessage() )
+        checkEnteredUsername();
+    else if( clientState == stateRequestPassword && bluetooth->hasMessage() )
+        checkEnteredPassword();
+    else if( clientState == stateUserLoggedIn && bluetooth->hasMessage() )
+        handleUserCommands();
+}
+
+void BluetoothCentralLockSystem::checkEnteredUsername()
+{
+    if( bluetoothMessageEquals(ALLOWED_USER) )
+        sendPasswordPrompt();
+    else
+        sendPrompt();
+}
+
+void BluetoothCentralLockSystem::sendPasswordPrompt()
+{
+    clientState = stateRequestPassword;
+    bluetooth->sendString(passwordPrompt);
+}
+
+void BluetoothCentralLockSystem::checkEnteredPassword()
+{
+    if( bluetoothMessageEquals(ALLOWED_USER_PASSWORD) )
+        sendLoginSuccessfulMessage();
+    else
+        sendLoginUnsuccessfulMessage();
+}
+
+void BluetoothCentralLockSystem::sendLoginSuccessfulMessage()
+{
+    clientState = stateUserLoggedIn;
+    bluetooth->sendString(loginSuccessfulMessage);
+    sendPrompt();
+}
+
+void BluetoothCentralLockSystem::sendLoginUnsuccessfulMessage()
+{
+    clientState = stateRequestUsername;
+    bluetooth->sendString(loginUnsuccessfulMessage);
+    sendPrompt();
+}
+
+void BluetoothCentralLockSystem::handleUserCommands()
+{
+    const char* command = bluetooth->getMessage();
+    if( strcmp(command, lockDoorsCommand) == 0 )
+        lockDoorsAndNotifyClient();
+    else if( strcmp(command, unlockDoorsCommand) == 0 )
+        unlockDoorsAndNotifyClient();
+
+    sendPrompt();
+    delete[] command;
+}
+
+void BluetoothCentralLockSystem::lockDoorsAndNotifyClient()
+{
+    locks->lockDoors();
+    bluetooth->sendString(lockDoorsResponse);
+}
+
+void BluetoothCentralLockSystem::unlockDoorsAndNotifyClient()
+{
+    locks->unlockDoors();
+    bluetooth->sendString(unlockDoorsResponse);
+}
+
 void BluetoothCentralLockSystem::sendGreetingMessage()
 {
+    clientState = stateRequestUsername;
     bluetooth->sendString(greetingMessage);
-    sentGreetingMessage = true;
+    sendPrompt();
 }
 
 void BluetoothCentralLockSystem::sendPrompt()
 {
-    bluetooth->sendString(userLoggedIn ? userPrompt : basePrompt);
-}
-
-void BluetoothCentralLockSystem::handleBluetoothMessage()
-{
-    if( !userLoggedIn )
-    {
-        if( requestingUsername )
-        {
-            const char* currentUser = bluetooth->getMessage();
-            if( strcmp(currentUser, ALLOWED_USER) == 0 )
-            {
-                requestingUsername = false;
-                requestingPassword = true;
-                bluetooth->sendString(passwordPrompt);
-            }
-            else
-            {
-                sendPrompt();
-            }
-        }
-        else if( requestingPassword )
-        {
-            const char* enteredPassword = bluetooth->getMessage();
-            if( strcmp(enteredPassword, ALLOWED_USER_PASSWORD) == 0 )
-            {
-                userLoggedIn = true;
-                requestingPassword = false;
-                bluetooth->sendString(loginSuccessfulMessage);
-                sendPrompt();
-            }
-            else
-            {
-                bluetooth->sendString(loginUnsuccessfulMessage);
-                sendPrompt();
-                requestingUsername = true;
-                requestingPassword = false;
-            }
-        }
-    }
+    if( clientState == stateUserLoggedIn )
+        bluetooth->sendString( userPrompt );
     else
-    {
-        // awaiting commands to either lock or unlock the doors
-        const char* command = bluetooth->getMessage();
-        if( strcmp(command, lockDoorsCommand) == 0 )
-        {
-            locks->lockDoors();
-            bluetooth->sendString(lockDoorsResponse);
-        }
-        else if( strcmp(command, unlockDoorsCommand) == 0 )
-        {
-            locks->unlockDoors();
-            bluetooth->sendString(unlockDoorsResponse);
-        }
-        sendPrompt();
-    }
+        bluetooth->sendString( basePrompt );
 }
 
-void BluetoothCentralLockSystem::resetBluetoothConnectionParameters()
+bool BluetoothCentralLockSystem::bluetoothMessageEquals(const char* str)
 {
-    sentGreetingMessage = false;
-    requestingUsername = false;
-    requestingPassword = false;
-    userLoggedIn = false;
+    const char* message = bluetooth->getMessage();
+    int result = strcmp(message, str);
+    delete[] message;
+
+    return (result == 0);
 }
 
-void BluetoothCentralLockSystem::run()
+bool BluetoothCentralLockSystem::needToResetClientState()
 {
-    if( lockButton->isPressed() )
-    {
-        locks->lockDoors();
-    }
-    else if( unlockButton->isPressed() )
-    {
-        locks->unlockDoors();
-    }
-    else if( bluetooth->isClientConnected() )
-    {
-        if( !userLoggedIn )
-        {
-            if( !sentGreetingMessage )
-            {
-                sendGreetingMessage();
-                sendPrompt();
-                requestingUsername = true;
-            }
-            else if( bluetooth->hasMessage() )
-            {
-                handleBluetoothMessage();
-            }
-        }
-        else if( userLoggedIn )
-        {
-            if( bluetooth->hasMessage() )
-            {
-                handleBluetoothMessage();
-            }
-        }
-    }
-
-    if( !bluetooth->isClientConnected() )
-    {
-        resetBluetoothConnectionParameters();
-    }
+    return ( !bluetooth->isClientConnected() || 
+             clientState > stateUserLoggedIn || 
+             clientState < stateSendGreetingMessage );
 }
