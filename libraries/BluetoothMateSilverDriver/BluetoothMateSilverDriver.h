@@ -9,11 +9,10 @@ public:
 	BluetoothMateSilverDriver();
 	~BluetoothMateSilverDriver();
 
-    bool isDeviceConnected() const;
-    void print(const char* message) const;
-    void printLine(const char* message) const;
+    bool isClientConnected() const;
+    void sendString(const char* message);
     bool hasMessage() const;
-    const char* getMessage() const; 
+    const char* getMessage(); 
 };
 
 #endif

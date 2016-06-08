@@ -15,8 +15,8 @@ public:
     PowerLocksDriverF150Custom(int lockPin, int unlockPin);
     ~PowerLocksDriverF150Custom();
 
-    void lockDoors() const;
-    void unlockDoors() const;
+    void lockDoors();
+    void unlockDoors();
 
 private:
     // intentionally unimplemented - use the public ctor with arguments

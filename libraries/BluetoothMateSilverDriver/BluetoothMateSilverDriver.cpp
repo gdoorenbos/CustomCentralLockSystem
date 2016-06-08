@@ -8,16 +8,12 @@ BluetoothMateSilverDriver::~BluetoothMateSilverDriver()
 {
 }
 
-bool BluetoothMateSilverDriver::isDeviceConnected() const
+bool BluetoothMateSilverDriver::isClientConnected() const
 {
     return false;
 }
 
-void BluetoothMateSilverDriver::print(const char* message) const
-{
-}
-
-void BluetoothMateSilverDriver::printLine(const char* message) const
+void BluetoothMateSilverDriver::sendString(const char* message)
 {
 }
 
@@ -26,7 +22,7 @@ bool BluetoothMateSilverDriver::hasMessage() const
     return false;
 }
 
-const char* BluetoothMateSilverDriver::getMessage() const
+const char* BluetoothMateSilverDriver::getMessage()
 {
     return "";
 }

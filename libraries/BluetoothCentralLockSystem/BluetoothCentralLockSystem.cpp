@@ -3,7 +3,7 @@
 #include <PowerLocksDriver.h>
 #include <PushButtonDriver.h>
 #include "UserLogin.h"
-#include <cstring>
+#include <string.h>
 
 /* Greeting message:
 ________            ________
