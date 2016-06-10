@@ -54,6 +54,8 @@ BluetoothCentralLockSystem::~BluetoothCentralLockSystem()
 
 void BluetoothCentralLockSystem::run()
 {
+    bluetooth->run();
+    
     if( lockButton->isPressed() )
         locks->lockDoors();
     else if( unlockButton->isPressed() )
