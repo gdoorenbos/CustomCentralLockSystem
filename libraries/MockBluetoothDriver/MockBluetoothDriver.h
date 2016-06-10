@@ -10,7 +10,7 @@ public:
     ~MockBluetoothDriver();
 
     // client connection
-    bool isClientConnected() const;
+    bool isClientConnected();
     void connectClient();
     void disconnectClient();
     

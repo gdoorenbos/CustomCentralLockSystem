@@ -17,7 +17,7 @@ MockBluetoothDriver::~MockBluetoothDriver()
         deleteMessageForClient();
 }
 
-bool MockBluetoothDriver::isClientConnected() const
+bool MockBluetoothDriver::isClientConnected()
 {
     return clientIsConnected;
 }

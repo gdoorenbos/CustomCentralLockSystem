@@ -13,7 +13,7 @@ public:
 	~BluetoothMateSilverDriver();
 
 	void run();
-    bool isClientConnected() const;
+    bool isClientConnected();
     void sendString(const char* message);
     bool hasMessage() const;
     const char* getMessage();

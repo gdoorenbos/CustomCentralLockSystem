@@ -11,7 +11,7 @@ public:
 	virtual ~BluetoothDriver();
 
 	virtual void run();
-    virtual bool isClientConnected() const = 0;
+    virtual bool isClientConnected() = 0;
     virtual void sendString(const char* message) = 0;
     virtual bool hasMessage() const = 0;
     virtual const char* getMessage() = 0;
