@@ -66,6 +66,7 @@ help:
 	@echo "    install-packages:	unpacks tarballs in the $(PACKAGE_DIR)/ directory."
 	@echo "    build: 				builds the test code in the $(USER_DIR)/ directory."
 	@echo "    run-tests: 			runs the test code, building it first if necessary."
+	@echo "    memcheck:            runs valgrind memory leak detector on the test executable."
 	@echo ""
 	@echo "    clean: 			deletes build artifacts (*.o files, *.a files, etc.)."
 	@echo "    clean-packages: 	cleans the $(INSTALL_DIR)/ directory."
@@ -139,7 +140,11 @@ build: $(TEST_EXECUTABLE)
 
 .PHONY: run-tests
 run-tests: $(TEST_EXECUTABLE)
-	@ $(TEST_EXECUTABLE)
+	@ $<
+
+.PHONY: memcheck
+memcheck: $(TEST_EXECUTABLE)
+	valgrind --leak-check=yes $<
 
 # Clean targets
 .PHONY: clean
