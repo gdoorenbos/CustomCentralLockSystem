@@ -12,7 +12,8 @@ public:
 
 	void giveCharacter(const char inputChar);
 	bool hasMessage() const;
-	const char* getMessage();
+	const char* getMessage();	// consumes the message
+	const char* peekMessage();	// returns the message without consuming it
 
 private:
 	char* finishedMessage;

@@ -6,8 +6,8 @@
 #define PUSH_BUTTON_UNLOCK_PIN  7
 
 // Bluetooth
-#define BLUETOOTH_SERIAL_TX_PIN 2
-#define BLUETOOTH_SERIAL_RX_PIN 3
+#define BLUETOOTH_SERIAL_RX_PIN 2
+#define BLUETOOTH_SERIAL_TX_PIN 3
 
 // Power Locks
 #define POWER_LOCKS_LOCK_PIN    4

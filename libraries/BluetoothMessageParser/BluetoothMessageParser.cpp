@@ -89,3 +89,20 @@ const char* BluetoothMessageParser::getMessage()
 		return emptyStr;
 	}
 }
+
+const char* BluetoothMessageParser::peekMessage() 
+{
+	if( finishedMessage != 0 )
+	{
+		// make copy on heap and return
+		char* messageCopy = new char[strlen(finishedMessage)+1];
+		strncpy(messageCopy, finishedMessage, strlen(finishedMessage)+1);
+		return messageCopy;
+	}
+	else
+	{
+		char* emptyStr = new char[1];
+		emptyStr[0] = '\0';
+		return emptyStr;
+	}
+}
