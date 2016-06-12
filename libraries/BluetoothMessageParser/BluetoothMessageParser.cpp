@@ -6,6 +6,7 @@ BluetoothMessageParser::BluetoothMessageParser()
 	, finishedMessage(makeCopyOfStringOnHeap(""))
 	, clientIsConnected(false)
 	, hasMessageFlag(false)
+	, ignoreChars(0)
 {
 }
 
@@ -20,23 +21,33 @@ BluetoothMessageParser::~BluetoothMessageParser()
 
 void BluetoothMessageParser::giveCharacter(const char inputChar)
 {
-	if( inputChar == '\n' )
-		copyInputBufferToFinishedMessage();
+	if( ignoreChars == 0 )
+	{
+		if( inputChar == '\n' )
+			copyInputBufferToFinishedMessage();
+		else
+		{
+			appendCharacterToInputBufferIfNotWhitespace(inputChar);
+
+			// check for connect or disconnect
+			if(strstr(inputBuffer, "DISCONNECT") != 0)
+			{
+				clientIsConnected = false;
+				clearInputBuffer();
+			}
+			else if(strstr(inputBuffer, "CONNECT") != 0)
+			{
+				clientIsConnected = true;
+				clearInputBuffer();
+
+				// after the CONNECT string, there are 11 characters we don't care about. Let's ignore them.
+				ignoreChars = 11;
+			}
+		}
+	}
 	else
 	{
-		appendCharacterToInputBufferIfNotWhitespace(inputChar);
-
-		// check for connect or disconnect
-		if(strstr(inputBuffer, "DISCONNECT") != 0)
-		{
-			clientIsConnected = false;
-			clearInputBuffer();
-		}
-		else if(strstr(inputBuffer, "CONNECT") != 0)
-		{
-			clientIsConnected = true;
-			clearInputBuffer();
-		}
+		--ignoreChars;
 	}
 }
 

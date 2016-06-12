@@ -33,6 +33,7 @@ private:
 	char* inputBuffer;
 	bool hasMessageFlag;
 	bool clientIsConnected;
+	unsigned int ignoreChars;
 };
 
 #endif BLUETOOTH_MESSAGE_PARSER

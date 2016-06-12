@@ -1,6 +1,9 @@
 #include "gtest/gtest.h"
 #include "BluetoothMessageParser.h"
 
+const char* clientConnectString = "CONNECT!!!!!!!!!!!";
+const char* clientDisconnectString = "DISCONNECT";
+
 void verifyParserMessage(const char* expectedMessage, BluetoothMessageParser &parser)
 {
 	const char* reportedMessage = parser.getMessage();
@@ -30,6 +33,7 @@ void giveNewlineToParserAndVerifyHasMessage(BluetoothMessageParser &parser)
 void sendMessageAndVerify(const char* message, BluetoothMessageParser &parser)
 {
 	giveBareStringToParserAndVerifyNoMessage(message, parser);
+	giveCharacterToParserAndVerifyNoMessage('\r', parser);
 	giveNewlineToParserAndVerifyHasMessage(parser);
 	verifyParserMessage(message, parser);
 }
@@ -108,16 +112,16 @@ TEST(BluetoothMessageParser, trailingWhitespace)
 TEST(BluetoothMessageParser, clientConnectedAfterBasicConnectString)
 {
 	BluetoothMessageParser parser;
-	giveBareStringToParserAndVerifyNoMessage("CONNECT", parser);
+	giveBareStringToParserAndVerifyNoMessage(clientConnectString, parser);
 	EXPECT_TRUE(parser.isClientConnected());
 }
 
 TEST(BluetoothMessageParser, clientDisconnectedAfterDisconnectString)
 {
 	BluetoothMessageParser parser;
-	giveBareStringToParserAndVerifyNoMessage("CONNECT", parser);
+	giveBareStringToParserAndVerifyNoMessage(clientConnectString, parser);
 	EXPECT_TRUE(parser.isClientConnected());
-	giveBareStringToParserAndVerifyNoMessage("DISCONNECT", parser);
+	giveBareStringToParserAndVerifyNoMessage(clientDisconnectString, parser);
 	EXPECT_FALSE(parser.isClientConnected());
 }
 
@@ -126,10 +130,18 @@ TEST(BluetoothMessageParser, clientConnectsAndDisconnectsMultipleTimes)
 	BluetoothMessageParser parser;
 	for(int i=0; i<5; ++i)
 	{
-		giveBareStringToParserAndVerifyNoMessage("CONNECT", parser);
+		giveBareStringToParserAndVerifyNoMessage(clientConnectString, parser);
 		EXPECT_TRUE(parser.isClientConnected());
-		giveBareStringToParserAndVerifyNoMessage("DISCONNECT", parser);
+		giveBareStringToParserAndVerifyNoMessage(clientDisconnectString, parser);
 		EXPECT_FALSE(parser.isClientConnected());		
 	}
+}
+
+TEST(BluetoothMessageParser, charsAfterConnectStringAreIgnored)
+{
+	BluetoothMessageParser parser;
+	giveBareStringToParserAndVerifyNoMessage(clientConnectString, parser);
+	EXPECT_TRUE(parser.isClientConnected());
+	sendMessageAndVerify("hello", parser);
 }
 
