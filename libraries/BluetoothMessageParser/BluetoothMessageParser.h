@@ -15,10 +15,24 @@ public:
 	const char* getMessage();	// consumes the message
 	const char* peekMessage();	// returns the message without consuming it
 
+	bool isClientConnected();
+
 private:
+	// methods
+	void appendCharacterToInputBufferIfNotWhitespace(const char inputChar);
+	void appendCharacterToInputBuffer(const char inputChar);
+	void copyInputBufferToFinishedMessageIfEmpty();
+	void copyInputBufferToFinishedMessage();
+	void clearInputBuffer();
+
+	// utility method for creating strings on the heap
+	char* makeCopyOfStringOnHeap(const char* inputStr);
+
+	// members
 	char* finishedMessage;
 	char* inputBuffer;
 	bool hasMessageFlag;
+	bool clientIsConnected;
 };
 
 #endif BLUETOOTH_MESSAGE_PARSER

@@ -1,21 +1,37 @@
 #include "gtest/gtest.h"
 #include "BluetoothMessageParser.h"
 
-void sendMessageAndVerify(const char* message, BluetoothMessageParser &parser)
+void verifyParserMessage(const char* expectedMessage, BluetoothMessageParser &parser)
 {
-	for(int i=0; i<strlen(message); ++i)
-	{
-		parser.giveCharacter(message[i]);
-		EXPECT_FALSE(parser.hasMessage());
-	}
-
-	parser.giveCharacter('\n');
-	EXPECT_TRUE(parser.hasMessage());
-
 	const char* reportedMessage = parser.getMessage();
 	EXPECT_FALSE(parser.hasMessage());
-	EXPECT_STREQ(message, reportedMessage);
+	EXPECT_STREQ(expectedMessage, reportedMessage);
 	delete[] reportedMessage;
+}
+
+void giveCharacterToParserAndVerifyNoMessage(const char inputChar, BluetoothMessageParser &parser)
+{
+	parser.giveCharacter(inputChar);
+	EXPECT_FALSE(parser.hasMessage());
+}
+
+void giveBareStringToParserAndVerifyNoMessage(const char* inputStr, BluetoothMessageParser &parser)
+{
+	for(int i=0; i<strlen(inputStr); ++i)
+		giveCharacterToParserAndVerifyNoMessage(inputStr[i], parser);
+}
+
+void giveNewlineToParserAndVerifyHasMessage(BluetoothMessageParser &parser)
+{
+	parser.giveCharacter('\n');
+	EXPECT_TRUE(parser.hasMessage());
+}
+
+void sendMessageAndVerify(const char* message, BluetoothMessageParser &parser)
+{
+	giveBareStringToParserAndVerifyNoMessage(message, parser);
+	giveNewlineToParserAndVerifyHasMessage(parser);
+	verifyParserMessage(message, parser);
 }
 
 TEST(BluetoothMessageParser, noMessageAvailableOnInitialization)
@@ -24,11 +40,16 @@ TEST(BluetoothMessageParser, noMessageAvailableOnInitialization)
 	EXPECT_FALSE(parser.hasMessage());
 }
 
+TEST(BluetoothMessageParser, clientNotConnectedOnInitialization)
+{
+	BluetoothMessageParser parser;
+	EXPECT_FALSE(parser.isClientConnected());
+}
+
 TEST(BluetoothMessageParser, hasMessageAfterSingleNewline)
 {
 	BluetoothMessageParser parser;
-	parser.giveCharacter('\n');
-	EXPECT_TRUE(parser.hasMessage());
+	giveNewlineToParserAndVerifyHasMessage(parser);
 }
 
 TEST(BluetoothMessageParser, hasMessageTrueAfterFirstMessage)
@@ -39,15 +60,14 @@ TEST(BluetoothMessageParser, hasMessageTrueAfterFirstMessage)
 	parser.giveCharacter('o');
 	parser.giveCharacter('o');
 	EXPECT_FALSE(parser.hasMessage());
-	parser.giveCharacter('\n');
-	EXPECT_TRUE(parser.hasMessage());
+	giveNewlineToParserAndVerifyHasMessage(parser);
 }
 
 TEST(BluetoothMessageParser, getMessageClearsHasMessage)
 {
 	BluetoothMessageParser parser;
-	parser.giveCharacter('\n');
-	EXPECT_TRUE(parser.hasMessage());
+	giveNewlineToParserAndVerifyHasMessage(parser);
+
 	const char* message = parser.getMessage();
 	EXPECT_FALSE(parser.hasMessage());
 	delete[] message;
@@ -74,5 +94,42 @@ TEST(BluetoothMessageParser, multipleMessages)
 	sendMessageAndVerify("", parser);
 	sendMessageAndVerify("ded", parser);
 	sendMessageAndVerify("", parser);
+}
+
+TEST(BluetoothMessageParser, trailingWhitespace)
+{
+	BluetoothMessageParser parser;
+	giveBareStringToParserAndVerifyNoMessage("foo", parser);
+	giveCharacterToParserAndVerifyNoMessage('\r', parser);
+	giveNewlineToParserAndVerifyHasMessage(parser);
+	verifyParserMessage("foo", parser);
+}
+
+TEST(BluetoothMessageParser, clientConnectedAfterBasicConnectString)
+{
+	BluetoothMessageParser parser;
+	giveBareStringToParserAndVerifyNoMessage("CONNECT", parser);
+	EXPECT_TRUE(parser.isClientConnected());
+}
+
+TEST(BluetoothMessageParser, clientDisconnectedAfterDisconnectString)
+{
+	BluetoothMessageParser parser;
+	giveBareStringToParserAndVerifyNoMessage("CONNECT", parser);
+	EXPECT_TRUE(parser.isClientConnected());
+	giveBareStringToParserAndVerifyNoMessage("DISCONNECT", parser);
+	EXPECT_FALSE(parser.isClientConnected());
+}
+
+TEST(BluetoothMessageParser, clientConnectsAndDisconnectsMultipleTimes)
+{
+	BluetoothMessageParser parser;
+	for(int i=0; i<5; ++i)
+	{
+		giveBareStringToParserAndVerifyNoMessage("CONNECT", parser);
+		EXPECT_TRUE(parser.isClientConnected());
+		giveBareStringToParserAndVerifyNoMessage("DISCONNECT", parser);
+		EXPECT_FALSE(parser.isClientConnected());		
+	}
 }
 
