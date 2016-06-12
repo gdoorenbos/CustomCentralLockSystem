@@ -41,7 +41,7 @@ void BluetoothMessageParser::giveCharacter(const char inputChar)
 				clearInputBuffer();
 
 				// after the CONNECT string, there are 11 characters we don't care about. Let's ignore them.
-				ignoreChars = 11;
+				ignoreChars = 9;
 			}
 		}
 	}

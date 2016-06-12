@@ -15,6 +15,5 @@ void setup()
 void loop()
 {
     cls->run();
-    delay(100);
 }
 

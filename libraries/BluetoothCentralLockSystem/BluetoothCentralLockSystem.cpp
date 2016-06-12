@@ -35,16 +35,16 @@ BluetoothCentralLockSystem::BluetoothCentralLockSystem( BluetoothDriver* bluetoo
     , lockButton(lockButton)
     , unlockButton(unlockButton)
     , clientState(stateSendGreetingMessage)
-    , greetingMessage("________            ________\n\\       \\___/\\/\\___/       /\n \\                        /\n  \\__________  __________/\n             \\/\n")
-    , basePrompt(">")
-    , userPrompt("#")
-    , passwordPrompt("Enter password: ")
-    , loginSuccessfulMessage("Welcome Back, Master Wayne\n")
-    , loginUnsuccessfulMessage("Denied\n")
+    , greetingMessage(".     ________            ________\r\n.     \\       \\___/\\/\\___/       /\r\n.      \\                        /\r\n.       \\__________  __________/\r\n.                  \\/\r\n")
+    , basePrompt("~\r\n")
+    , userPrompt("#\r\n")
+    , passwordPrompt("Enter password: \r\n")
+    , loginSuccessfulMessage("Welcome Back, Master Wayne\r\n")
+    , loginUnsuccessfulMessage("Denied\r\n")
     , lockDoorsCommand("lockdoors")
     , unlockDoorsCommand("unlockdoors")
-    , lockDoorsResponse("success!\n")
-    , unlockDoorsResponse("success!\n")
+    , lockDoorsResponse("success!\r\n")
+    , unlockDoorsResponse("success!\r\n")
 {
 }
 
@@ -77,6 +77,13 @@ void BluetoothCentralLockSystem::handleBluetoothClient()
         checkEnteredPassword();
     else if( clientState == stateUserLoggedIn && bluetooth->hasMessage() )
         handleUserCommands();
+}
+
+void BluetoothCentralLockSystem::sendGreetingMessage()
+{
+    clientState = stateRequestUsername;
+    bluetooth->sendString(greetingMessage);
+    sendPrompt();
 }
 
 void BluetoothCentralLockSystem::checkEnteredUsername()
@@ -136,13 +143,6 @@ void BluetoothCentralLockSystem::unlockDoorsAndNotifyClient()
 {
     locks->unlockDoors();
     bluetooth->sendString(unlockDoorsResponse);
-}
-
-void BluetoothCentralLockSystem::sendGreetingMessage()
-{
-    clientState = stateRequestUsername;
-    bluetooth->sendString(greetingMessage);
-    sendPrompt();
 }
 
 void BluetoothCentralLockSystem::sendPrompt()

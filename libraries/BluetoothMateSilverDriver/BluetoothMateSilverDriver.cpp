@@ -7,15 +7,15 @@ BluetoothMateSilverDriver::BluetoothMateSilverDriver(int rxPin, int txPin)
 	: _rxPin(rxPin)
 	, _txPin(txPin)
 	, clientConnected(false)
-	, serialIfc(new SoftwareSerial(_rxPin, _txPin))
+	, serialIfc(new SoftwareSerial(_txPin, _rxPin))
 	, parser(new BluetoothMessageParser())
 {
-	serialIfc->begin(115200);  // The Bluetooth Mate defaults to 115200bps
+    serialIfc->begin(115200);  // The Bluetooth Mate defaults to 115200bps
 	setBaudTo9600();
 	serialIfc->begin(9600);  // Start bluetooth serial at 9600
 
 	// eventually we will want to change this so that we can't configure the bluetooth module remotely
-	disableCommandTimer();
+	// disableCommandTimer();
 	// setDeviceName("Batmobile");
 }
 
@@ -65,25 +65,13 @@ void BluetoothMateSilverDriver::disableCommandTimer()
 
 bool BluetoothMateSilverDriver::isClientConnected()
 {
-    // return false;
-    if( parser->hasMessage() )
-    {
-    	const char* message = parser->peekMessage();
-    	if( strstr(message, "CONNECT") != 0 && strstr(message, "DISCONNECT") == 0 )
-    	{
-    		clientConnected = true;
-    	}
-    	else if( strstr(message, "DISCONNECT") != 0 )
-    	{
-    		clientConnected = false;
-    	}
-    }
-    return clientConnected;
+    return parser->isClientConnected();
 }
 
 void BluetoothMateSilverDriver::sendString(const char* message)
 {
-	serialIfc->print(message);
+	serialIfc->write(message);
+    delay(10);
 }
 
 bool BluetoothMateSilverDriver::hasMessage() const
@@ -99,7 +87,5 @@ const char* BluetoothMateSilverDriver::getMessage()
 void BluetoothMateSilverDriver::run()
 {
 	if( serialIfc->available() )
-	{
-		parser->giveCharacter(serialIfc->read());
-	}
+        parser->giveCharacter(serialIfc->read());
 }
