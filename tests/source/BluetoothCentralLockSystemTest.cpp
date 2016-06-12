@@ -18,16 +18,16 @@ General process for cls:
 */
 
 // These may change. update as needed. 
-const char* greetingMessage = "________            ________\n\\       \\___/\\/\\___/       /\n \\                        /\n  \\__________  __________/\n             \\/\n>";
-const char* basePrompt = ">";
-const char* userPrompt = "#";
-const char* passwordPrompt = "Enter password: ";
-const char* loginSuccessfulMessage = "Welcome Back, Master Wayne\n#";
-const char* loginUnsuccessfulMessage = "Denied\n>";
+const char* greetingMessage = ".     ________            ________\r\n.     \\       \\___/\\/\\___/       /\r\n.      \\                        /\r\n.       \\__________  __________/\r\n.                  \\/\r\n~\r\n";
+const char* basePrompt = "~\r\n";
+const char* userPrompt = "#\r\n";
+const char* passwordPrompt = "Enter password: \r\n";
+const char* loginSuccessfulMessage = "Welcome Back, Master Wayne\r\n#\r\n";
+const char* loginUnsuccessfulMessage = "Denied\r\n~\r\n";
 const char* lockDoorsCommand = "lockdoors";
 const char* unlockDoorsCommand = "unlockdoors";
-const char* lockDoorsReponse = "success!\n#";
-const char* unlockDoorsResponse = "success!\n#";
+const char* lockDoorsReponse = "success!\r\n#\r\n";
+const char* unlockDoorsResponse = "success!\r\n#\r\n";
 
 // utility methods
 void expectMessageForClient( const char* expectedMessage, MockBluetoothDriver &bluetooth )

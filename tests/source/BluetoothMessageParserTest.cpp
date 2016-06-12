@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "BluetoothMessageParser.h"
 
-const char* clientConnectString = "CONNECT!!!!!!!!!!!";
+const char* clientConnectString = "CONNECT!!!!!!!!!";
 const char* clientDisconnectString = "DISCONNECT";
 
 void verifyParserMessage(const char* expectedMessage, BluetoothMessageParser &parser)
