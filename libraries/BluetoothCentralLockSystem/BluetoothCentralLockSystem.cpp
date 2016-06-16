@@ -35,16 +35,6 @@ BluetoothCentralLockSystem::BluetoothCentralLockSystem( BluetoothDriver* bluetoo
     , lockButton(lockButton)
     , unlockButton(unlockButton)
     , clientState(stateSendGreetingMessage)
-    , greetingMessage(".     ________            ________\r\n.     \\       \\___/\\/\\___/       /\r\n.      \\                        /\r\n.       \\__________  __________/\r\n.                  \\/\r\n")
-    , basePrompt("~\r\n")
-    , userPrompt("#\r\n")
-    , passwordPrompt("Enter password: \r\n")
-    , loginSuccessfulMessage("Welcome Back, Master Wayne\r\n")
-    , loginUnsuccessfulMessage("Denied\r\n")
-    , lockDoorsCommand("lockdoors")
-    , unlockDoorsCommand("unlockdoors")
-    , lockDoorsResponse("success!\r\n")
-    , unlockDoorsResponse("success!\r\n")
 {
 }
 
@@ -82,7 +72,7 @@ void BluetoothCentralLockSystem::handleBluetoothClient()
 void BluetoothCentralLockSystem::sendGreetingMessage()
 {
     clientState = stateRequestUsername;
-    bluetooth->sendString(greetingMessage);
+    bluetooth->sendString("Hello\r\n");
     sendPrompt();
 }
 
@@ -97,7 +87,7 @@ void BluetoothCentralLockSystem::checkEnteredUsername()
 void BluetoothCentralLockSystem::sendPasswordPrompt()
 {
     clientState = stateRequestPassword;
-    bluetooth->sendString(passwordPrompt);
+    bluetooth->sendString("password: \r\n");
 }
 
 void BluetoothCentralLockSystem::checkEnteredPassword()
@@ -111,23 +101,23 @@ void BluetoothCentralLockSystem::checkEnteredPassword()
 void BluetoothCentralLockSystem::sendLoginSuccessfulMessage()
 {
     clientState = stateUserLoggedIn;
-    bluetooth->sendString(loginSuccessfulMessage);
+    bluetooth->sendString("Welcome Back, Master Wayne\r\n");
     sendPrompt();
 }
 
 void BluetoothCentralLockSystem::sendLoginUnsuccessfulMessage()
 {
     clientState = stateRequestUsername;
-    bluetooth->sendString(loginUnsuccessfulMessage);
+    bluetooth->sendString("Denied\r\n");
     sendPrompt();
 }
 
 void BluetoothCentralLockSystem::handleUserCommands()
 {
     SmartCharPtr command = bluetooth->getMessage();
-    if( strcmp(command.pointer(), lockDoorsCommand) == 0 )
+    if( strcmp(command.pointer(), "lockdoors") == 0 )
         lockDoorsAndNotifyClient();
-    else if( strcmp(command.pointer(), unlockDoorsCommand) == 0 )
+    else if( strcmp(command.pointer(), "unlockdoors") == 0 )
         unlockDoorsAndNotifyClient();
 
     sendPrompt();
@@ -136,21 +126,21 @@ void BluetoothCentralLockSystem::handleUserCommands()
 void BluetoothCentralLockSystem::lockDoorsAndNotifyClient()
 {
     locks->lockDoors();
-    bluetooth->sendString(lockDoorsResponse);
+    bluetooth->sendString("success!\r\n");
 }
 
 void BluetoothCentralLockSystem::unlockDoorsAndNotifyClient()
 {
     locks->unlockDoors();
-    bluetooth->sendString(unlockDoorsResponse);
+    bluetooth->sendString("success!\r\n");
 }
 
 void BluetoothCentralLockSystem::sendPrompt()
 {
     if( clientState == stateUserLoggedIn )
-        bluetooth->sendString( userPrompt );
+        bluetooth->sendString( "#\r\n" );
     else
-        bluetooth->sendString( basePrompt );
+        bluetooth->sendString( "~\r\n" );
 }
 
 bool BluetoothCentralLockSystem::bluetoothMessageEquals(const char* str)

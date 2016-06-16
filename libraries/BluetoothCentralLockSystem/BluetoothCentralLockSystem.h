@@ -57,18 +57,6 @@ private:
         stateUserLoggedIn
     } clientState;
     bool needToResetClientState();
-
-    // string constants
-    const char* greetingMessage;
-    const char* basePrompt;
-    const char* userPrompt;
-    const char* passwordPrompt;
-    const char* loginSuccessfulMessage;
-    const char* loginUnsuccessfulMessage;
-    const char* lockDoorsCommand;
-    const char* lockDoorsResponse;
-    const char* unlockDoorsCommand;
-    const char* unlockDoorsResponse;
 };
 
 #endif

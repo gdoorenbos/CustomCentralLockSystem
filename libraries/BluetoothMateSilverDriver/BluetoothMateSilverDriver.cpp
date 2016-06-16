@@ -1,7 +1,19 @@
 #include "BluetoothMateSilverDriver.h"
 #include "BluetoothMessageParser.h"
-#include <SoftwareSerial.h>
 #include "Arduino.h"
+
+/* 
+Using the SoftwareSerial library on an ATTiny platform may cause problems. 
+The ATTiny84 has 8,192 bytes of program storage, and 512 bytes of SRAM. 
+Software Serial takes up 2,270 bytes (28%) of program storage and 112 bytes (22%) of dynamic memory.
+
+This is the current space usage of the BluetoothCentralLockSystem on the ATTiny84:
+Sketch uses 6,200 bytes (75%) of program storage space. Maximum is 8,192 bytes.
+Global variables use 371 bytes (72%) of dynamic memory, leaving 141 bytes for local variables. Maximum is 512 bytes.
+
+This is very cramped. If there's a smaller library that accomplishes the same thing, it should be used instead.
+ */
+#include <SoftwareSerial.h>
 
 BluetoothMateSilverDriver::BluetoothMateSilverDriver(int rxPin, int txPin)
 	: _rxPin(rxPin)
