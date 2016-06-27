@@ -18,10 +18,11 @@ General process for cls:
 */
 
 // These may change. update as needed. 
-const char* greetingMessage = ".     ________            ________\r\n.     \\       \\___/\\/\\___/       /\r\n.      \\                        /\r\n.       \\__________  __________/\r\n.                  \\/\r\n~\r\n";
+// const char* greetingMessage = ".     ________            ________\r\n.     \\       \\___/\\/\\___/       /\r\n.      \\                        /\r\n.       \\__________  __________/\r\n.                  \\/\r\n~\r\n";
+const char* greetingMessage = "Hello\r\n~\r\n";
 const char* basePrompt = "~\r\n";
 const char* userPrompt = "#\r\n";
-const char* passwordPrompt = "Enter password: \r\n";
+const char* passwordPrompt = "password: \r\n";
 const char* loginSuccessfulMessage = "Welcome Back, Master Wayne\r\n#\r\n";
 const char* loginUnsuccessfulMessage = "Denied\r\n~\r\n";
 const char* lockDoorsCommand = "lockdoors";
@@ -110,7 +111,7 @@ TEST(BluetoothCentralLockSystem, successfulClientAuthentication)
 	bluetooth.connectClient();
 	cls.run();
 	const char* reportedStr = bluetooth.getMessageForClient();
-	EXPECT_STREQ(reportedStr, greetingMessage);
+	EXPECT_STREQ(greetingMessage, reportedStr);
 	delete[] reportedStr;
 
 	expectResponseForMessageFromClient(ALLOWED_USER, passwordPrompt, cls, bluetooth);
