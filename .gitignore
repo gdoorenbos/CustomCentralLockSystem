@@ -1,7 +1,7 @@
 Docs/*
 libraries/BluetoothCentralLockSystem/UserLogin.h
-*.[oa]
-*.~
 tests/install/*
 tests/packages/*.done
 tests/output/*
+*.[oa]
+*.~
