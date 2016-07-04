@@ -22,13 +22,8 @@ BluetoothMateSilverDriver::BluetoothMateSilverDriver(int rxPin, int txPin)
 	, serialIfc(new SoftwareSerial(_txPin, _rxPin))
 	, parser(new BluetoothMessageParser())
 {
-    serialIfc->begin(115200);  // The Bluetooth Mate defaults to 115200bps
-	setBaudTo9600();
-	serialIfc->begin(9600);  // Start bluetooth serial at 9600
-
-	// eventually we will want to change this so that we can't configure the bluetooth module remotely
-	// disableCommandTimer();
-	// setDeviceName("Batmobile");
+	// BluetoothMate should be pre-configured before using in application
+	serialIfc->begin(9600);
 }
 
 BluetoothMateSilverDriver::~BluetoothMateSilverDriver()
