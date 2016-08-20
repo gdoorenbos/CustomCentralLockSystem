@@ -2,10 +2,10 @@
 #include <string.h>
 
 BluetoothMessageParser::BluetoothMessageParser()
-	: inputBuffer(makeCopyOfStringOnHeap(""))
-	, finishedMessage(makeCopyOfStringOnHeap(""))
-	, clientIsConnected(false)
+	: finishedMessage(makeCopyOfStringOnHeap(""))
+	, inputBuffer(makeCopyOfStringOnHeap(""))
 	, hasMessageFlag(false)
+	, clientIsConnected(false)
 	, ignoreChars(0)
 {
 }

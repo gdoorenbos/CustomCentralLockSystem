@@ -36,4 +36,4 @@ private:
 	unsigned int ignoreChars;
 };
 
-#endif BLUETOOTH_MESSAGE_PARSER
+#endif
