@@ -13,11 +13,11 @@ LinxKh3RxModule::LinxKh3RxModule(LinxAddrBus _addrBus, LinxDataBus _dataBus, int
 {
     // address pins
     for( int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        pinMode(addrBus[i], OUTPUT);
+        pinMode(addrBus.a[i], OUTPUT);
 
     // data lines
     for( int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        pinMode(dataBus[i], INPUT);
+        pinMode(dataBus.d[i], INPUT);
 
     // valid transmission pin
     pinMode(vt, INPUT);
@@ -32,7 +32,7 @@ void LinxKh3RxModule::setAddress(unsigned short address)
     LinxAddressArray addrArray(address);
 
     for( int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        digitalWrite(addrBus[i], addrArray.getAddressBit(i) ? HIGH : LOW);
+        digitalWrite(addrBus.a[i], addrArray.getAddressBit(i) ? HIGH : LOW);
 }
 
 bool LinxKh3RxModule::hasValidTransmission()
@@ -43,7 +43,7 @@ bool LinxKh3RxModule::hasValidTransmission()
 bool LinxKh3RxModule::getDataBit(unsigned char dataBit)
 {
     if( dataBit >= 0 && dataBit < LINX_DATA_BUS_SIZE )
-        return digitalRead(dataBus[dataBit]) == HIGH;
+        return digitalRead(dataBus.d[dataBit]) == HIGH;
     else
         return false;
 }

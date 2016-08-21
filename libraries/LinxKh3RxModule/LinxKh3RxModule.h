@@ -5,8 +5,10 @@
 
 #define LINX_ADDR_BUS_SIZE  10
 #define LINX_DATA_BUS_SIZE  5
-typedef int LinxAddrBus [LINX_ADDR_BUS_SIZE];
-typedef int LinxDataBus [LINX_DATA_BUS_SIZE];
+// typedef int LinxAddrBus [LINX_ADDR_BUS_SIZE];
+// typedef int LinxDataBus [LINX_DATA_BUS_SIZE];
+typedef struct LinxAddrBus { int a[LINX_ADDR_BUS_SIZE]; } LinxAddrBus;
+typedef struct LinxDataBus { int d[LINX_DATA_BUS_SIZE]; } LinxDataBus;
 
 class LinxKh3RxModule : public LinxRxModule
 {
