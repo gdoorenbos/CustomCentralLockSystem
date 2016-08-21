@@ -49,8 +49,37 @@ TEST(LinxCentralLockSystem, rxModuleWorksGoldenScenario)
     rxer.giveTransmission(KEYFOB_UNLOCK_BUTTON);
     cls.run();
     ASSERT_FALSE(locksDriver.areDoorsLocked());
-    
+
     rxer.giveTransmission(KEYFOB_LOCK_BUTTON);
     cls.run();
     ASSERT_TRUE(locksDriver.areDoorsLocked());
+}
+
+TEST(LinxCentralLockSystem, rxModuleGracefullyHandlesBadTransmissions)
+{
+    MockLinxRxModule rxer;
+    MockPowerLocksDriver locksDriver;
+    MockPushButtonDriver lockButton;
+    MockPushButtonDriver unlockButton;
+    LinxCentralLockSystem cls(&rxer, &locksDriver, &lockButton, &unlockButton);
+
+    // put locks in known state by pressing lock button
+    lockButton.press();
+    cls.run();
+    lockButton.release();
+    ASSERT_TRUE(locksDriver.areDoorsLocked());
+
+    // send errant messages
+    rxer.giveTransmission(0);
+    cls.run();
+    ASSERT_TRUE(locksDriver.areDoorsLocked());
+
+    rxer.giveTransmission(100);
+    cls.run();
+    ASSERT_TRUE(locksDriver.areDoorsLocked());
+
+    // send valid message
+    rxer.giveTransmission(KEYFOB_UNLOCK_BUTTON);
+    cls.run();
+    ASSERT_FALSE(locksDriver.areDoorsLocked());
 }
