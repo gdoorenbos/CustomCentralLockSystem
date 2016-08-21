@@ -3,6 +3,7 @@
 
 // forward declarations
 class BluetoothDriver;
+class LinxRxModule;
 class PowerLocksDriver;
 class PushButtonDriver;
 
@@ -15,6 +16,7 @@ protected:
 public:
     virtual ~DriverFactory();
     virtual BluetoothDriver* getBluetoothDriver();
+    virtual LinxRxModule* getLinxRxModule();
     virtual PowerLocksDriver* getPowerLocksDriver();
     virtual PushButtonDriver* getLockButton();
     virtual PushButtonDriver* getUnlockButton();
