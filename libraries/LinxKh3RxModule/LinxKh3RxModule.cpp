@@ -43,7 +43,7 @@ bool LinxKh3RxModule::hasValidTransmission()
 bool LinxKh3RxModule::getDataBit(unsigned char dataBit)
 {
     if( dataBit >= 0 && dataBit < LINX_DATA_BUS_SIZE )
-        return digitalRead(dataBus[i]) == HIGH;
+        return digitalRead(dataBus[dataBit]) == HIGH;
     else
         return false;
 }
