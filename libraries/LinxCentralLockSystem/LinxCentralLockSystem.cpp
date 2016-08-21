@@ -18,6 +18,11 @@ LinxCentralLockSystem::~LinxCentralLockSystem()
 {
 }
 
+void LinxCentralLockSystem::setDeviceAddress(unsigned short address)
+{
+    rxer->setAddress(address);
+}
+
 void LinxCentralLockSystem::run()
 {
     if( lockButton->isPressed() )

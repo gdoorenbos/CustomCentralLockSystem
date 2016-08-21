@@ -1,5 +1,6 @@
-#include "DriverFactoryImpl.h"
 #include <LinxCentralLockSystem.h>
+#include "DriverFactoryImpl.h"
+#include "LinxDeviceAddress.h"
 
 LinxCentralLockSystem* cls;
 
@@ -10,6 +11,7 @@ void setup()
                                    , df->getPowerLocksDriver()
                                    , df->getLockButton()
                                    , df->getUnlockButton() );
+    cls->setDeviceAddress(LINX_DEVICE_ADDRESS);
 }
 
 void loop()

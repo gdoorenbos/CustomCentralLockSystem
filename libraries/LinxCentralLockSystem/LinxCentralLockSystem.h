@@ -11,6 +11,7 @@ public:
     LinxCentralLockSystem(LinxRxModule* rxer, PowerLocksDriver* locksDriver, PushButtonDriver* lockButton, PushButtonDriver* unlockButton);
     ~LinxCentralLockSystem();
 
+    void setDeviceAddress(unsigned short address);
     void run();
 
 private:
