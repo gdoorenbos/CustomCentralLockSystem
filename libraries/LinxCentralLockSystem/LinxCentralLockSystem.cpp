@@ -1,16 +1,13 @@
 #include "LinxCentralLockSystem.h"
 #include "LinxRxModule.h"
 #include "PowerLocksDriver.h"
-#include "PushButtonDriver.h"
 
 #define KEYFOB_LOCK_BUTTON_DATA_BIT     3
 #define KEYFOB_UNLOCK_BUTTON_DATA_BIT   1
 
-LinxCentralLockSystem::LinxCentralLockSystem(LinxRxModule* rxer, PowerLocksDriver* locksDriver, PushButtonDriver* lockButton, PushButtonDriver* unlockButton)
+LinxCentralLockSystem::LinxCentralLockSystem(LinxRxModule* rxer, PowerLocksDriver* locksDriver)
     : rxer(rxer)
     , locksDriver(locksDriver)
-    , lockButton(lockButton)
-    , unlockButton(unlockButton)
 {
 }
 
@@ -18,18 +15,9 @@ LinxCentralLockSystem::~LinxCentralLockSystem()
 {
 }
 
-void LinxCentralLockSystem::setDeviceAddress(unsigned short address)
-{
-    rxer->setAddress(address);
-}
-
 void LinxCentralLockSystem::run()
 {
-    if( lockButton->isPressed() )
-        locksDriver->lockDoors();
-    else if( unlockButton->isPressed() )
-        locksDriver->unlockDoors();
-    else if( rxer->hasValidTransmission() )
+    if( rxer->hasValidTransmission() )
         decipherRxModuleTransmission();
 }
 

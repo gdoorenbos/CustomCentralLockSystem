@@ -3,15 +3,13 @@
 
 class LinxRxModule;
 class PowerLocksDriver;
-class PushButtonDriver;
 
 class LinxCentralLockSystem
 {
 public:
-    LinxCentralLockSystem(LinxRxModule* rxer, PowerLocksDriver* locksDriver, PushButtonDriver* lockButton, PushButtonDriver* unlockButton);
+    LinxCentralLockSystem(LinxRxModule* rxer, PowerLocksDriver* locksDriver);
     ~LinxCentralLockSystem();
 
-    void setDeviceAddress(unsigned short address);
     void run();
 
 private:
@@ -24,8 +22,6 @@ private:
     // member variables
     LinxRxModule* rxer;
     PowerLocksDriver* locksDriver;
-    PushButtonDriver* lockButton;
-    PushButtonDriver* unlockButton;
 };
 
 #endif

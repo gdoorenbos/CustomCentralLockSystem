@@ -7,11 +7,9 @@ LinxCentralLockSystem* cls;
 void setup()
 {
     DriverFactory* df = DriverFactoryImpl::getInstance();
+    df->getLinuxRxModule()->setAddress(LINX_DEVICE_ADDRESS);
     cls = new LinxCentralLockSystem( df->getLinxRxModule()
-                                   , df->getPowerLocksDriver()
-                                   , df->getLockButton()
-                                   , df->getUnlockButton() );
-    cls->setDeviceAddress(LINX_DEVICE_ADDRESS);
+                                   , df->getPowerLocksDriver() );
 }
 
 void loop()

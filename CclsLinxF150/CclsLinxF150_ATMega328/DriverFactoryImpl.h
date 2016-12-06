@@ -16,14 +16,10 @@ public:
     //driver getters
     LinxRxModule* getLinxRxModule();
     PowerLocksDriver* getPowerLocksDriver();
-    PushButtonDriver* getLockButton();
-    PushButtonDriver* getUnlockButton();
 
 private:
     LinxRxModule* rxModule;
     PowerLocksDriver* powerLocksDriver;
-    PushButtonDriver* lockButton;
-    PushButtonDriver* unlockButton;
 };
 
 #endif

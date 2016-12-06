@@ -6,8 +6,6 @@
 
 DriverFactoryImpl::DriverFactoryImpl()
     : powerLocksDriver(new PowerLocksDriverF150Custom(POWER_LOCKS_LOCK_PIN, POWER_LOCKS_UNLOCK_PIN))
-    , lockButton(new PushButtonInternalPullupDriver(PUSH_BUTTON_LOCK_PIN))
-    , unlockButton(new PushButtonInternalPullupDriver(PUSH_BUTTON_UNLOCK_PIN))
 {
     LinxAddrBus addrBus;
     addrBus.a[0] = LINX_A0;
@@ -35,8 +33,6 @@ DriverFactoryImpl::~DriverFactoryImpl()
 {
     delete rxModule;
     delete powerLocksDriver;
-    delete lockButton;
-    delete unlockButton;
 }
 
 DriverFactory* DriverFactoryImpl::getInstance()
@@ -58,14 +54,3 @@ PowerLocksDriver* DriverFactoryImpl::getPowerLocksDriver()
 {
     return powerLocksDriver;
 }
-
-PushButtonDriver* DriverFactoryImpl::getLockButton()
-{
-    return lockButton;
-}
-
-PushButtonDriver* DriverFactoryImpl::getUnlockButton()
-{
-    return unlockButton;
-}
-
