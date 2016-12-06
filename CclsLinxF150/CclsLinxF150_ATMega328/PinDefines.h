@@ -27,9 +27,5 @@
 #define POWER_LOCKS_LOCK_PIN    18
 #define POWER_LOCKS_UNLOCK_PIN  19
 
-// Push Buttons
-#define PUSH_BUTTON_LOCK_PIN    20
-#define PUSH_BUTTON_UNLOCK_PIN  21
-
 #endif
 

@@ -2,7 +2,6 @@
 #include "PinDefines.h"
 #include <LinxKh3RxModule.h>
 #include <PowerLocksDriverF150Custom.h>
-#include <PushButtonInternalPullupDriver.h>
 
 DriverFactoryImpl::DriverFactoryImpl()
     : powerLocksDriver(new PowerLocksDriverF150Custom(POWER_LOCKS_LOCK_PIN, POWER_LOCKS_UNLOCK_PIN))
