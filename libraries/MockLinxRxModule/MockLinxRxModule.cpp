@@ -2,7 +2,7 @@
 #include "cstdio"
 
 MockLinxRxModule::MockLinxRxModule()
-	: address(0)
+    : address(0)
     , validTransmission(false)
     , dataBit(99)
 {
@@ -12,14 +12,14 @@ MockLinxRxModule::~MockLinxRxModule()
 {
 }
 
-void MockLinxRxModule::setAddress(unsigned short address)
+void MockLinxRxModule::setAddress(unsigned short _address)
 {
-	this->address = address;
+    address = _address;
 }
 
 unsigned short MockLinxRxModule::getAddress() const
 {
-	return address;
+    return address;
 }
 
 void MockLinxRxModule::giveTransmission(unsigned char buttonPressed)
@@ -41,7 +41,7 @@ bool MockLinxRxModule::hasValidTransmission()
     return validTransmission;
 }
 
-bool MockLinxRxModule::getDataBit(unsigned char dataBit)
+bool MockLinxRxModule::getDataBit(unsigned char _dataBit)
 {
-    return (this->dataBit == dataBit);
+    return (dataBit == _dataBit);
 }

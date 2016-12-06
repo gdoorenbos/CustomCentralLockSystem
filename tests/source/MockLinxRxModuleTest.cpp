@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "MockLinxRxModule.h"
 
-TEST(MockLinxRxModule, setDeviceAddress)
+TEST(MockLinxRxModule, setAddress)
 {
 	MockLinxRxModule rxer;
     unsigned short assignedAddress;
