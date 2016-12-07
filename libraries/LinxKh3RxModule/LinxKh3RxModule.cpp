@@ -2,22 +2,29 @@
 #include "LinxAddressArray.h"
 #include "Arduino.h"
 
-// LinxKh3RxModule::LinxKh3RxModule( int a0, int a1, int a2, int a3, int a4
-//                                 , int a5, int a6, int a7, int a8, int a9
-//                                 , int d0, int d1, int d2, int d3, int d4
-//                                 , int vt)
 LinxKh3RxModule::LinxKh3RxModule(LinxAddrBus _addrBus, LinxDataBus _dataBus, int _vt)
     : addrBus(_addrBus)
     , dataBus(_dataBus)
     , vt(_vt)
 {
     // address pins
-    for( int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        pinMode(addrBus.a[i], OUTPUT);
+    pinMode(addrBus.a0, OUTPUT);
+    pinMode(addrBus.a1, OUTPUT);
+    pinMode(addrBus.a2, OUTPUT);
+    pinMode(addrBus.a3, OUTPUT);
+    pinMode(addrBus.a4, OUTPUT);
+    pinMode(addrBus.a5, OUTPUT);
+    pinMode(addrBus.a6, OUTPUT);
+    pinMode(addrBus.a7, OUTPUT);
+    pinMode(addrBus.a8, OUTPUT);
+    pinMode(addrBus.a9, OUTPUT);
 
     // data lines
-    for( int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        pinMode(dataBus.d[i], INPUT);
+    pinMode(dataBus.d0, INPUT);
+    pinMode(dataBus.d1, INPUT);
+    pinMode(dataBus.d2, INPUT);
+    pinMode(dataBus.d3, INPUT);
+    pinMode(dataBus.d4, INPUT);
 
     // valid transmission pin
     pinMode(vt, INPUT);
@@ -29,10 +36,16 @@ LinxKh3RxModule::~LinxKh3RxModule()
 
 void LinxKh3RxModule::setAddress(unsigned short address)
 {
-    LinxAddressArray addrArray(address);
-
-    for( int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        digitalWrite(addrBus.a[i], addrArray.getAddressBit(i) ? HIGH : LOW);
+    digitalWrite(addrBus.a0, (address & (1 << 0)) ? HIGH : LOW);
+    digitalWrite(addrBus.a1, (address & (1 << 1)) ? HIGH : LOW);
+    digitalWrite(addrBus.a2, (address & (1 << 2)) ? HIGH : LOW);
+    digitalWrite(addrBus.a3, (address & (1 << 3)) ? HIGH : LOW);
+    digitalWrite(addrBus.a4, (address & (1 << 4)) ? HIGH : LOW);
+    digitalWrite(addrBus.a5, (address & (1 << 5)) ? HIGH : LOW);
+    digitalWrite(addrBus.a6, (address & (1 << 6)) ? HIGH : LOW);
+    digitalWrite(addrBus.a7, (address & (1 << 7)) ? HIGH : LOW);
+    digitalWrite(addrBus.a8, (address & (1 << 8)) ? HIGH : LOW);
+    digitalWrite(addrBus.a9, (address & (1 << 9)) ? HIGH : LOW);
 }
 
 bool LinxKh3RxModule::hasValidTransmission()
