@@ -1,5 +1,4 @@
 #include "LinxKh3RxModule.h"
-#include "LinxAddressArray.h"
 #include "Arduino.h"
 
 LinxKh3RxModule::LinxKh3RxModule(LinxAddrBus _addrBus, LinxDataBus _dataBus, int _vt)
