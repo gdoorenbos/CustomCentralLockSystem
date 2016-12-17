@@ -3,33 +3,13 @@
 
 #include "LinxRxModule.h"
 
-struct LinxAddrBus
-{
-    int a0;
-    int a1;
-    int a2;
-    int a3;
-    int a4;
-    int a5;
-    int a6;
-    int a7;
-    int a8;
-    int a9;
-};
-
-struct LinxDataBus
-{
-    int d0;
-    int d1;
-    int d2;
-    int d3;
-    int d4;
-};
+const unsigned int LINX_ADDR_BUS_SIZE = 10;
+const unsigned int LINX_DATA_BUS_SIZE = 5;
 
 class LinxKh3RxModule : public LinxRxModule
 {
 public:
-    LinxKh3RxModule(LinxAddrBus addrBus, LinxDataBus dataBus, int vt);
+    LinxKh3RxModule(int addrBus[LINX_ADDR_BUS_SIZE], int dataBus[LINX_DATA_BUS_SIZE], int vt);
     ~LinxKh3RxModule();
 
 
@@ -42,8 +22,8 @@ private:
     LinxKh3RxModule();
 
     // members
-    LinxAddrBus addrBus;
-    LinxDataBus dataBus;
+    int addrBus[LINX_ADDR_BUS_SIZE];
+    int dataBus[LINX_DATA_BUS_SIZE];
     int vt;
 };
 
