@@ -34,8 +34,8 @@ public:
 
 
     void setAddress(unsigned short address);
-    bool hasValidTransmission();
     bool getDataBit(unsigned char dataBit);
+    bool hasValidTransmission();
 
 private:
     // intentionally not implemented

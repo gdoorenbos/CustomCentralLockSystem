@@ -8,8 +8,8 @@ public:
     virtual ~LinxRxModule();
 
     virtual void setAddress(unsigned short address) = 0;
-    virtual bool hasValidTransmission() = 0;
     virtual bool getDataBit(unsigned char dataBit) = 0;
+    virtual bool hasValidTransmission() = 0;
 };
 
 #endif

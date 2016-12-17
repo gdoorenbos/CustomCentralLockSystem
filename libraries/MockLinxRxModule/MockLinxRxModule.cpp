@@ -1,10 +1,9 @@
 #include "MockLinxRxModule.h"
-#include "cstdio"
 
 MockLinxRxModule::MockLinxRxModule()
     : address(0)
-    , validTransmission(false)
     , dataBit(99)
+    , validTransmission(false)
 {
 }
 

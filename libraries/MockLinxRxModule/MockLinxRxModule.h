@@ -21,8 +21,8 @@ public:
 
 private:
     unsigned short address;
-    bool validTransmission;
     unsigned char dataBit;
+    bool validTransmission;
 };
 
 #endif
