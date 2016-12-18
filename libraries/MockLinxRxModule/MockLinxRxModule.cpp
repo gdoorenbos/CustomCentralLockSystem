@@ -1,38 +1,48 @@
 #include "MockLinxRxModule.h"
 #include "MockGpioHandler.h"
 
-MockLinxRxModule::MockLinxRxModule(MockGpioHandler* _pinHandler, int _addrBus[LINX_ADDR_BUS_SIZE], int _dataBus[LINX_DATA_BUS_SIZE], int _vtPin)
-    : LinxRxModule(_pinHandler, _addrBus, _dataBus, _vtPin)
+MockLinxRxModule::MockLinxRxModule(MockGpioHandler* pinHandler)
+    : LinxRxModule(pinHandler, getTestAddrBus(), getTestDataBus(), getTestVtPin())
 {
 }
 
 MockLinxRxModule::MockLinxRxModule()
-    : LinxRxModule(new MockGpioHandler())
+    : LinxRxModule(new MockGpioHandler(), getTestAddrBus(), getTestDataBus(), getTestVtPin())
 {
-    // default addr bus
-    for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        addrBus[i] = i + 1;
-
-    // default data bus
-    for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        dataBus[i] = i + 1 + LINX_ADDR_BUS_SIZE;
-
-    // valid transmission pin
-    vtPin = LINX_ADDR_BUS_SIZE + LINX_DATA_BUS_SIZE + 1;
-
-    // configure pins
-    initializePins();
 }
 
 MockLinxRxModule::~MockLinxRxModule()
 {
 }
 
+LinxAddrBus MockLinxRxModule::getTestAddrBus()
+{
+    LinxAddrBus addrBus;
+    for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
+        addrBus.a[i] = i+1;
+
+    return addrBus;
+}
+
+LinxDataBus MockLinxRxModule::getTestDataBus()
+{
+    LinxDataBus dataBus;
+    for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
+        dataBus.d[i] = i+1+LINX_ADDR_BUS_SIZE;
+
+    return dataBus;
+}
+
+int MockLinxRxModule::getTestVtPin()
+{
+    return LINX_ADDR_BUS_SIZE + LINX_DATA_BUS_SIZE + 1;
+}
+
 unsigned short MockLinxRxModule::getAddress() const
 {
     unsigned short address = 0;
     for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        address |= (pinHandler->isPinHigh(addrBus[i]) ? 1 : 0) << i;
+        address |= (pinHandler->isPinHigh(addrBus.a[i]) ? 1 : 0) << i;
 
     return address;
 }
@@ -40,7 +50,7 @@ unsigned short MockLinxRxModule::getAddress() const
 void MockLinxRxModule::clearDataBits()
 {
     for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        pinHandler->setPinLow(dataBus[i]);
+        pinHandler->setPinLow(dataBus.d[i]);
 }
 
 bool MockLinxRxModule::isFobButtonValid(unsigned char fobButton)
@@ -55,7 +65,7 @@ void MockLinxRxModule::setDataBusAccordingToFobButton(unsigned char fobButton)
 {
     clearDataBits();
     if( isFobButtonValid(fobButton) )
-        pinHandler->setPinHigh(dataBus[fobButton-1]);
+        pinHandler->setPinHigh(dataBus.d[fobButton-1]);
 }
 
 void MockLinxRxModule::setVtPinAccordingToFobButton(unsigned char fobButton)

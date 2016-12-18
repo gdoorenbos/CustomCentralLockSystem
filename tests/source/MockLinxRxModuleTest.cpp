@@ -2,23 +2,6 @@
 #include "MockGpioHandler.h"
 #include "gtest/gtest.h"
 
-void getTestAddrBus(int addrBus[LINX_ADDR_BUS_SIZE])
-{
-    for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        addrBus[i] = i+1;
-}
-
-void getTestDataBus(int dataBus[LINX_DATA_BUS_SIZE])
-{
-    for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        dataBus[i] = i+1+LINX_ADDR_BUS_SIZE;
-}
-
-int getTestVtPin()
-{
-    return LINX_ADDR_BUS_SIZE + LINX_DATA_BUS_SIZE + 1;
-}
-
 void assertFobButtonPress(MockLinxRxModule &rxer, unsigned int button)
 {
     rxer.pushFobButton(button);
@@ -75,59 +58,21 @@ TEST(MockLinxRxModule, checkingDataBits)
         assertFobButtonPress(rxer, i);
 }
 
-TEST(MockLinxRxModule, copyAddrBus)
-{
-    MockLinxRxModule rxer;
-    int srcAddrBus[LINX_ADDR_BUS_SIZE];
-    int dstAddrBus[LINX_ADDR_BUS_SIZE];
-    
-    // fill source bus array
-    for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        srcAddrBus[i] = i+1;
-
-    // copy the bus
-    rxer.copyAddrBus(dstAddrBus, srcAddrBus);
-
-    // verify dest bus array
-    for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        ASSERT_EQ(srcAddrBus[i], dstAddrBus[i]);
-}
-
-TEST(MockLinxRxModule, copyDataBus)
-{
-    MockLinxRxModule rxer;
-    int srcDataBus[LINX_DATA_BUS_SIZE];
-    int dstDataBus[LINX_DATA_BUS_SIZE];
-    
-    // fill source bus array
-    for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        srcDataBus[i] = i+1;
-
-    // copy the bus
-    rxer.copyDataBus(dstDataBus, srcDataBus);
-
-    // verify dest bus array
-    for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        ASSERT_EQ(srcDataBus[i], dstDataBus[i]);   
-}
-
 TEST(MockLinxRxModule, initializePins)
 {
     MockGpioHandler* pinHandler = new MockGpioHandler();
-    int addrBus[LINX_ADDR_BUS_SIZE];
-    int dataBus[LINX_DATA_BUS_SIZE];
-    int vtPin = getTestVtPin();
-    getTestAddrBus(addrBus);
-    getTestDataBus(dataBus);
-    MockLinxRxModule rxer(pinHandler, addrBus, dataBus, vtPin);
+    MockLinxRxModule rxer(pinHandler);
+    LinxAddrBus addrBus = rxer.getTestAddrBus();
+    LinxDataBus dataBus = rxer.getTestDataBus();
+    int vtPin = rxer.getTestVtPin();
 
     // verify addr bus configured for output
     for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
-        ASSERT_TRUE(pinHandler->isPinConfiguredForOutput(addrBus[i]));
+        ASSERT_TRUE(pinHandler->isPinConfiguredForOutput(addrBus.a[i]));
 
     // verify data bus configured for input
     for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
-        ASSERT_TRUE(pinHandler->isPinConfiguredForInput(dataBus[i]));
+        ASSERT_TRUE(pinHandler->isPinConfiguredForInput(dataBus.d[i]));
 
     // verify vtPin configured for input
     ASSERT_TRUE(pinHandler->isPinConfiguredForInput(vtPin));
@@ -150,22 +95,18 @@ TEST(MockLinxRxModule, getBitFromNumber)
 TEST(MockLinxRxModule, setAddressAndCheckPins)
 {
     MockGpioHandler* pinHandler = new MockGpioHandler();
-    int addrBus[LINX_ADDR_BUS_SIZE];
-    int dataBus[LINX_DATA_BUS_SIZE];
-    int vtPin = getTestVtPin();
-    getTestAddrBus(addrBus);
-    getTestDataBus(dataBus);
-    MockLinxRxModule rxer(pinHandler, addrBus, dataBus, vtPin);
+    MockLinxRxModule rxer(pinHandler);
+    LinxAddrBus addrBus = rxer.getTestAddrBus();
 
     rxer.setAddress(0b1010101010);
-    ASSERT_FALSE(pinHandler->isPinHigh(addrBus[0]));
-    ASSERT_TRUE(pinHandler->isPinHigh(addrBus[1]));
-    ASSERT_FALSE(pinHandler->isPinHigh(addrBus[2]));
-    ASSERT_TRUE(pinHandler->isPinHigh(addrBus[3]));
-    ASSERT_FALSE(pinHandler->isPinHigh(addrBus[4]));
-    ASSERT_TRUE(pinHandler->isPinHigh(addrBus[5]));
-    ASSERT_FALSE(pinHandler->isPinHigh(addrBus[6]));
-    ASSERT_TRUE(pinHandler->isPinHigh(addrBus[7]));
-    ASSERT_FALSE(pinHandler->isPinHigh(addrBus[8]));
-    ASSERT_TRUE(pinHandler->isPinHigh(addrBus[9]));
+    ASSERT_FALSE(pinHandler->isPinHigh(addrBus.a[0]));
+    ASSERT_TRUE(pinHandler->isPinHigh(addrBus.a[1]));
+    ASSERT_FALSE(pinHandler->isPinHigh(addrBus.a[2]));
+    ASSERT_TRUE(pinHandler->isPinHigh(addrBus.a[3]));
+    ASSERT_FALSE(pinHandler->isPinHigh(addrBus.a[4]));
+    ASSERT_TRUE(pinHandler->isPinHigh(addrBus.a[5]));
+    ASSERT_FALSE(pinHandler->isPinHigh(addrBus.a[6]));
+    ASSERT_TRUE(pinHandler->isPinHigh(addrBus.a[7]));
+    ASSERT_FALSE(pinHandler->isPinHigh(addrBus.a[8]));
+    ASSERT_TRUE(pinHandler->isPinHigh(addrBus.a[9]));
 }

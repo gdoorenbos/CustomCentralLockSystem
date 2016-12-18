@@ -9,7 +9,7 @@ class MockGpioHandler;
 class MockLinxRxModule : public LinxRxModule
 {
 public:
-    MockLinxRxModule(MockGpioHandler* pinHandler, int _addrBus[LINX_ADDR_BUS_SIZE], int _dataBus[LINX_DATA_BUS_SIZE], int _vtPin);
+    MockLinxRxModule(MockGpioHandler* pinHandler);
     MockLinxRxModule();
     ~MockLinxRxModule();
 
@@ -21,6 +21,15 @@ public:
 
     // sets all pins in the data bus low
     void clearDataBits();
+
+    // returns a mock LinxAddrBus used for testing.
+    LinxAddrBus getTestAddrBus();
+
+    // returns a mock LinxDataBus used for testing.
+    LinxDataBus getTestDataBus();
+
+    // returns a mock vtPin used for testing
+    int getTestVtPin();
 
 private:
     bool isFobButtonValid(unsigned char fobButton);
