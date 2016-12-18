@@ -6,15 +6,15 @@ class GpioHandler;
 const unsigned int LINX_ADDR_BUS_SIZE = 10;
 const unsigned int LINX_DATA_BUS_SIZE = 5;
 
-typedef struct _LinxAddrBus
+struct LinxAddrBus
 {
     int a[LINX_ADDR_BUS_SIZE];
-} LinxAddrBus;
+};
 
-typedef struct _LinxDataBus
+struct LinxDataBus
 {
     int d[LINX_DATA_BUS_SIZE];
-} LinxDataBus;
+};
 
 class LinxRxModule
 {
