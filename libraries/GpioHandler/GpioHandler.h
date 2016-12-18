@@ -12,6 +12,7 @@ public:
 
     virtual void setPinHigh(int pin) = 0;
     virtual void setPinLow(int pin) = 0;
+    void setPin(int pin, bool value);
 
     virtual bool isPinHigh(int pin) = 0;
     virtual bool isPinLow(int pin) = 0;

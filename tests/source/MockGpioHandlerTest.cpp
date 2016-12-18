@@ -71,3 +71,16 @@ TEST(MockGpioHandler, togglePinHighAndLow)
     ASSERT_TRUE(pinHandler.isPinLow(1));
     ASSERT_FALSE(pinHandler.isPinHigh(1));
 }
+
+TEST(MockGpioHandler, setPin)
+{
+    MockGpioHandler pinHandler;
+
+    pinHandler.setPin(1, true);
+    ASSERT_TRUE(pinHandler.isPinHigh(1));
+    ASSERT_FALSE(pinHandler.isPinLow(1));
+
+    pinHandler.setPin(2, false);
+    ASSERT_TRUE(pinHandler.isPinLow(2));
+    ASSERT_FALSE(pinHandler.isPinHigh(2));
+}
