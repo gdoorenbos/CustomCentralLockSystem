@@ -1,46 +1,73 @@
 #include "MockLinxRxModule.h"
+#include "MockGpioHandler.h"
+
+MockLinxRxModule::MockLinxRxModule(MockGpioHandler* _pinHandler, int _addrBus[LINX_ADDR_BUS_SIZE], int _dataBus[LINX_DATA_BUS_SIZE], int _vtPin)
+    : LinxRxModule(_pinHandler, _addrBus, _dataBus, _vtPin)
+{
+}
 
 MockLinxRxModule::MockLinxRxModule()
-    : address(0)
-    , dataBit(99)
-    , validTransmission(false)
+    : LinxRxModule(new MockGpioHandler())
 {
+    // default addr bus
+    for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
+        addrBus[i] = i + 1;
+
+    // default data bus
+    for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
+        dataBus[i] = i + 1 + LINX_ADDR_BUS_SIZE;
+
+    // valid transmission pin
+    vtPin = LINX_ADDR_BUS_SIZE + LINX_DATA_BUS_SIZE + 1;
+
+    // configure pins
+    initializePins();
 }
 
 MockLinxRxModule::~MockLinxRxModule()
 {
 }
 
-void MockLinxRxModule::setAddress(unsigned short _address)
-{
-    address = _address;
-}
-
 unsigned short MockLinxRxModule::getAddress() const
 {
+    unsigned short address = 0;
+    for( unsigned int i=0; i<LINX_ADDR_BUS_SIZE; ++i )
+        address |= (pinHandler->isPinHigh(addrBus[i]) ? 1 : 0) << i;
+
     return address;
 }
 
-void MockLinxRxModule::giveTransmission(unsigned char buttonPressed)
+void MockLinxRxModule::clearDataBits()
 {
-    if(buttonPressed >= 1 && buttonPressed <= 5)
-    {
-        validTransmission = true;
-        dataBit = buttonPressed - 1;
-    }
+    for( unsigned int i=0; i<LINX_DATA_BUS_SIZE; ++i )
+        pinHandler->setPinLow(dataBus[i]);
+}
+
+bool MockLinxRxModule::isFobButtonValid(unsigned char fobButton)
+{
+    if( fobButton >= 1 && fobButton <= 5 )
+        return true;
+
+    return false;
+}
+
+void MockLinxRxModule::setDataBusAccordingToFobButton(unsigned char fobButton)
+{
+    clearDataBits();
+    if( isFobButtonValid(fobButton) )
+        pinHandler->setPinHigh(dataBus[fobButton-1]);
+}
+
+void MockLinxRxModule::setVtPinAccordingToFobButton(unsigned char fobButton)
+{
+    if( isFobButtonValid(fobButton) )
+        pinHandler->setPinHigh(vtPin);
     else
-    {
-        validTransmission = false;
-        dataBit = 99;
-    }
+        pinHandler->setPinLow(vtPin);
 }
 
-bool MockLinxRxModule::hasValidTransmission()
+void MockLinxRxModule::pushFobButton(unsigned char fobButton)
 {
-    return validTransmission;
-}
-
-bool MockLinxRxModule::getDataBit(unsigned char _dataBit)
-{
-    return (dataBit == _dataBit);
+    setVtPinAccordingToFobButton(fobButton);
+    setDataBusAccordingToFobButton(fobButton);
 }

@@ -12,15 +12,15 @@ TEST(LinxCentralLockSystem, rxModuleWorksGoldenScenario)
     MockPowerLocksDriver locksDriver;
     LinxCentralLockSystem cls(&rxer, &locksDriver);
 
-    rxer.giveTransmission(KEYFOB_LOCK_BUTTON);
+    rxer.pushFobButton(KEYFOB_LOCK_BUTTON);
     cls.run();
     ASSERT_TRUE(locksDriver.areDoorsLocked());
 
-    rxer.giveTransmission(KEYFOB_UNLOCK_BUTTON);
+    rxer.pushFobButton(KEYFOB_UNLOCK_BUTTON);
     cls.run();
     ASSERT_FALSE(locksDriver.areDoorsLocked());
 
-    rxer.giveTransmission(KEYFOB_LOCK_BUTTON);
+    rxer.pushFobButton(KEYFOB_LOCK_BUTTON);
     cls.run();
     ASSERT_TRUE(locksDriver.areDoorsLocked());
 }
@@ -35,16 +35,16 @@ TEST(LinxCentralLockSystem, rxModuleGracefullyHandlesBadTransmissions)
     locksDriver.lockDoors();
 
     // send errant messages
-    rxer.giveTransmission(0);
+    rxer.pushFobButton(0);
     cls.run();
     ASSERT_TRUE(locksDriver.areDoorsLocked());
 
-    rxer.giveTransmission(100);
+    rxer.pushFobButton(100);
     cls.run();
     ASSERT_TRUE(locksDriver.areDoorsLocked());
 
     // send valid message
-    rxer.giveTransmission(KEYFOB_UNLOCK_BUTTON);
+    rxer.pushFobButton(KEYFOB_UNLOCK_BUTTON);
     cls.run();
     ASSERT_FALSE(locksDriver.areDoorsLocked());
 }
