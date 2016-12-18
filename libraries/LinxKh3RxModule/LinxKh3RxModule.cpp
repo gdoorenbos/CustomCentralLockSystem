@@ -1,9 +1,9 @@
 #include "LinxKh3RxModule.h"
-#include "ArduinoPinHandler.h"
+#include "ArduinoGpioHandler.h"
 #include "Arduino.h"
 
 LinxKh3RxModule::LinxKh3RxModule(LinxAddrBus addrBus, LinxDataBus dataBus, int vtPin)
-    : LinxRxModule(new ArduinoPinHandler(), addrBus, dataBus, vtPin)
+    : LinxRxModule(new ArduinoGpioHandler(), addrBus, dataBus, vtPin)
 {
 }
 
