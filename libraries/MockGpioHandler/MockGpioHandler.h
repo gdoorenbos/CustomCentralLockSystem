@@ -16,9 +16,16 @@ public:
     bool isPinConfiguredForOutput(int pin);
     bool isPinConfiguredForInput(int pin);
 
+    void setPinHigh(int pin);
+    void setPinLow(int pin);
+
+    bool isPinHigh(int pin);
+    bool isPinLow(int pin);
+
 private:
     std::set<int> outputPins;
     std::set<int> inputPins;
+    std::set<int> highPins;
 };
 
 #endif

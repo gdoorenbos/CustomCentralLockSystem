@@ -9,6 +9,12 @@ public:
 
     virtual void configurePinForOutput(int pin) = 0;
     virtual void configurePinForInput(int pin) = 0;
+
+    virtual void setPinHigh(int pin) = 0;
+    virtual void setPinLow(int pin) = 0;
+
+    virtual bool isPinHigh(int pin) = 0;
+    virtual bool isPinLow(int pin) = 0;
 };
 
 #endif
