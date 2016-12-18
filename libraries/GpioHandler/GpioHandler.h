@@ -5,7 +5,7 @@ class GpioHandler
 {
 public:
     GpioHandler();
-    ~GpioHandler();
+    virtual ~GpioHandler();
 
     virtual void configurePinForOutput(int pin) = 0;
     virtual void configurePinForInput(int pin) = 0;
