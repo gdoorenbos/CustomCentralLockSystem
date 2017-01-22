@@ -1,15 +1,15 @@
 #ifndef PUSH_BUTTON_DRIVER_H
 #define PUSH_BUTTON_DRIVER_H
 
-class PushButtonDriver
-{
-protected:
-    // don't instantiate this class directly
-    PushButtonDriver();
+#include "GenericInternalPullupPin.h"
 
+class PushButtonDriver : public GenericInternalPullupPin
+{
 public:
+    PushButtonDriver(GpioDriver* pinDriver);
     virtual ~PushButtonDriver();
-    virtual bool isPressed() const = 0;
+    
+    bool isPressed() const;
 };
 
 #endif

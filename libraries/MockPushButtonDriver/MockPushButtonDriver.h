@@ -1,7 +1,7 @@
-#ifndef MOCK_PUSH_BUTTON_DRIVER
-#define MOCK_PUSH_BUTTON_DRIVER
+#ifndef MOCK_PUSH_BUTTON_DRIVER_H
+#define MOCK_PUSH_BUTTON_DRIVER_H
 
-#include <PushButtonDriver.h>
+#include "PushButtonDriver.h"
 
 class MockPushButtonDriver : public PushButtonDriver
 {
@@ -11,10 +11,6 @@ public:
 
     void press();
     void release();
-    bool isPressed() const;
-
-private:
-    bool buttonIsPressed;
 };
 
 #endif

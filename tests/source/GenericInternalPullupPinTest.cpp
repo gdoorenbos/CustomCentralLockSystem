@@ -4,7 +4,7 @@
 
 TEST(GenericInternalPullupPin, basicFunction)
 {
-    MockGpioDriver* pinDriver = new MockGpioDriver(0);
+    MockGpioDriver* pinDriver = new MockGpioDriver();
     GenericInternalPullupPin testPin(pinDriver);
 
     // assert pin configuration

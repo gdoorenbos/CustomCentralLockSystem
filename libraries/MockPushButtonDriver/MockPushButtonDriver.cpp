@@ -1,7 +1,8 @@
 #include "MockPushButtonDriver.h"
+#include "MockGpioDriver.h"
 
 MockPushButtonDriver::MockPushButtonDriver()
-    : buttonIsPressed(false)
+    : PushButtonDriver(new MockGpioDriver())
 {
 }
 
@@ -11,15 +12,10 @@ MockPushButtonDriver::~MockPushButtonDriver()
 
 void MockPushButtonDriver::press()
 {
-    buttonIsPressed = true;
+    _pinDriver->setLow();
 }
 
 void MockPushButtonDriver::release()
 {
-    buttonIsPressed = false;
-}
-
-bool MockPushButtonDriver::isPressed() const
-{
-    return buttonIsPressed;
+    _pinDriver->setHigh();
 }

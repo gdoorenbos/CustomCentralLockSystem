@@ -9,12 +9,13 @@ public:
     GenericInternalPullupPin(GpioDriver* pinDriver);
     virtual ~GenericInternalPullupPin();
 
-    bool isLogicHigh();
-    bool isLogicLow();
+    bool isLogicHigh() const;
+    bool isLogicLow() const;
 
-private:
+protected:
     GpioDriver* _pinDriver;
 
+private:
     void pinSetup();
 };
 

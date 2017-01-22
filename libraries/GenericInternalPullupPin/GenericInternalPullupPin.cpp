@@ -17,12 +17,12 @@ void GenericInternalPullupPin::pinSetup()
     _pinDriver->configureForInputPullup();
 }
 
-bool GenericInternalPullupPin::isLogicHigh()
+bool GenericInternalPullupPin::isLogicHigh() const
 {
     return _pinDriver->isLowWithDebounce();
 }
 
-bool GenericInternalPullupPin::isLogicLow()
+bool GenericInternalPullupPin::isLogicLow() const
 {
     return _pinDriver->isHighWithDebounce();
 }

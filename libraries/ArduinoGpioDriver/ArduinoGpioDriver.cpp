@@ -2,7 +2,7 @@
 #include "arduino.h"
 
 ArduinoGpioDriver::ArduinoGpioDriver(int pin)
-    : GpioDriver(pin)
+    : _pin(pin)
 {
 }
 
@@ -35,17 +35,17 @@ void ArduinoGpioDriver::setLow()
     digitalWrite(_pin, LOW);
 }
 
-bool ArduinoGpioDriver::isHigh()
+bool ArduinoGpioDriver::isHigh() const
 {
     return digitalRead(_pin) == HIGH;
 }
 
-bool ArduinoGpioDriver::isLow()
+bool ArduinoGpioDriver::isLow() const
 {
     return digitalRead(_pin) == LOW;
 }
 
-bool readWithDebounce(int debounceTime, int highOrLow)
+bool readWithDebounce(int debounceTime, int highOrLow) const
 {
     if( digitalRead(_pin) == highOrLow )
     {
@@ -55,12 +55,12 @@ bool readWithDebounce(int debounceTime, int highOrLow)
     return false;
 }
 
-bool ArduinoGpioDriver::isHighWithDebounce(int debounceTime)
+bool ArduinoGpioDriver::isHighWithDebounce(int debounceTime) const
 {
     readWithDebounce(debounceTime, HIGH);
 }
 
-bool ArduinoGpioDriver::isLowWithDebounce(int debounceTime)
+bool ArduinoGpioDriver::isLowWithDebounce(int debounceTime) const
 {
     readWithDebounce(debounceTime, LOW);
 }

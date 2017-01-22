@@ -4,7 +4,7 @@
 class GpioDriver
 {
 public:
-    GpioDriver(int pin);
+    GpioDriver();
     virtual ~GpioDriver();
 
     virtual void configureForOutput() = 0;
@@ -14,18 +14,11 @@ public:
     virtual void setHigh() = 0;
     virtual void setLow() = 0;
 
-    virtual bool isHigh() = 0;
-    virtual bool isLow() = 0;
+    virtual bool isHigh() const = 0;
+    virtual bool isLow() const = 0;
 
-    virtual bool isHighWithDebounce(int debounceTime = 100) = 0;
-    virtual bool isLowWithDebounce(int debounceTime = 100) = 0;
-
-protected:
-    int _pin;
-
-private:
-    // intentionally not implemented
-    GpioDriver();
+    virtual bool isHighWithDebounce(int debounceTime = 100) const = 0;
+    virtual bool isLowWithDebounce(int debounceTime = 100) const = 0;
 };
 
 #endif

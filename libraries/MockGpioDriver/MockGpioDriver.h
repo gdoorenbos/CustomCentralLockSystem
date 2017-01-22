@@ -6,7 +6,7 @@
 class MockGpioDriver : public GpioDriver
 {
 public:
-    MockGpioDriver(int pin);
+    MockGpioDriver();
     ~MockGpioDriver();
 
     void configureForOutput();
@@ -20,24 +20,21 @@ public:
     void setHigh();
     void setLow();
 
-    bool isHigh();
-    bool isLow();
+    bool isHigh() const;
+    bool isLow() const;
 
     // these methods call straight though to isHigh() and isLow() - don't want delays in mock classes
-    bool isHighWithDebounce(int debounceTime = 100);
-    bool isLowWithDebounce(int debounceTime = 100);
+    bool isHighWithDebounce(int debounceTime = 100) const;
+    bool isLowWithDebounce(int debounceTime = 100) const;
 
 private:
     bool outputConfigFlag;
     bool inputConfigFlag;
     bool inputPullupConfigFlag;
     bool pinIsLow;
-    int lastDebounceTime;
+    mutable int lastDebounceTime;
 
     void resetConfigFlags();
-
-    // intentionally not implemented
-    MockGpioDriver();
 };
 
 #endif

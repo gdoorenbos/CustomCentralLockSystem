@@ -31,7 +31,7 @@ void assertPinIsConfiguredForInputPullup(MockGpioDriver &pin)
 
 TEST(MockGpioDriver, configureForOutput)
 {
-    MockGpioDriver testPin(0);
+    MockGpioDriver testPin;
 
     assertPinIsNotConfigured(testPin);
     testPin.configureForOutput();
@@ -40,7 +40,7 @@ TEST(MockGpioDriver, configureForOutput)
 
 TEST(MockGpioDriver, configureForInput)
 {
-    MockGpioDriver testPin(0);
+    MockGpioDriver testPin;
 
     assertPinIsNotConfigured(testPin);
     testPin.configureForInput();
@@ -49,7 +49,7 @@ TEST(MockGpioDriver, configureForInput)
 
 TEST(MockGpioDriver, configureForInputPullup)
 {
-    MockGpioDriver testPin(0);
+    MockGpioDriver testPin;
     assertPinIsNotConfigured(testPin);
     testPin.configureForInputPullup();
     assertPinIsConfiguredForInputPullup(testPin);
@@ -58,7 +58,7 @@ TEST(MockGpioDriver, configureForInputPullup)
 
 TEST(MockGpioDriver, setHighLow)
 {
-    MockGpioDriver testPin(0);
+    MockGpioDriver testPin;
     testPin.configureForOutput();
     ASSERT_TRUE(testPin.isLow());
     ASSERT_FALSE(testPin.isHigh());

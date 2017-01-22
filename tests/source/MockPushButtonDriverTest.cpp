@@ -2,28 +2,28 @@
 #include "MockPushButtonDriver.h"
 
 // helper functions
-void expectPressed(MockPushButtonDriver pushButton)
+void assertPressed(MockPushButtonDriver &pushButton)
 {
-	EXPECT_TRUE(pushButton.isPressed());
+	ASSERT_TRUE(pushButton.isPressed());
 }
 
-void expectReleased(MockPushButtonDriver pushButton)
+void assertReleased(MockPushButtonDriver &pushButton)
 {
-	EXPECT_FALSE(pushButton.isPressed());
+	ASSERT_FALSE(pushButton.isPressed());
 }
 
 // tests
 TEST(MockPushButtonDriver, initializedUnpressed)
 {
 	MockPushButtonDriver pushButton;
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 }
 
 TEST(MockPushButtonDriver, properBehaviorWhenPressed)
 {
 	MockPushButtonDriver pushButton;
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 }
 
 TEST(MockPushButtonDriver, properBehaviorWhenReleased)
@@ -31,63 +31,63 @@ TEST(MockPushButtonDriver, properBehaviorWhenReleased)
 	MockPushButtonDriver pushButton;
 	pushButton.press();
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 }
 
 TEST(MockPushButtonDriver, repetitivePresses)
 {
 	MockPushButtonDriver pushButton;
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 }
 
 TEST(MockPushButtonDriver, repetitiveReleases)
 {
 	MockPushButtonDriver pushButton;
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 }
 
 TEST(MockPushButtonDriver, repetitivePressAndReleaseCycles)
 {
 	MockPushButtonDriver pushButton;
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 	pushButton.press();
-	expectPressed(pushButton);
+	assertPressed(pushButton);
 	pushButton.release();
-	expectReleased(pushButton);
+	assertReleased(pushButton);
 }

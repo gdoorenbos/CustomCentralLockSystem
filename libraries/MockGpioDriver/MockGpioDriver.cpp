@@ -1,7 +1,7 @@
 #include "MockGpioDriver.h"
 
-MockGpioDriver::MockGpioDriver(int pin)
-    : GpioDriver(pin)
+MockGpioDriver::MockGpioDriver()
+    : GpioDriver()
     , outputConfigFlag(false)
     , inputConfigFlag(false)
     , inputPullupConfigFlag(false)
@@ -35,6 +35,7 @@ void MockGpioDriver::configureForInput()
 
 void MockGpioDriver::configureForInputPullup()
 {
+    setHigh();
     resetConfigFlags();
     inputPullupConfigFlag = true;
 }
@@ -51,7 +52,6 @@ bool MockGpioDriver::isConfiguredForInput()
 
 bool MockGpioDriver::isConfiguredForInputPullup()
 {
-    setHigh();
     return inputPullupConfigFlag;
 }
 
@@ -65,23 +65,23 @@ void MockGpioDriver::setLow()
     pinIsLow = true;
 }
 
-bool MockGpioDriver::isHigh()
+bool MockGpioDriver::isHigh() const
 {
     return !pinIsLow;
 }
 
-bool MockGpioDriver::isLow()
+bool MockGpioDriver::isLow() const
 {
     return pinIsLow;
 }
     
-bool MockGpioDriver::isHighWithDebounce(int debounceTime)
+bool MockGpioDriver::isHighWithDebounce(int debounceTime) const
 {
     lastDebounceTime = debounceTime;
     return isHigh();
 }
 
-bool MockGpioDriver::isLowWithDebounce(int debounceTime)
+bool MockGpioDriver::isLowWithDebounce(int debounceTime) const
 {
     lastDebounceTime = debounceTime;
     return isLow();
