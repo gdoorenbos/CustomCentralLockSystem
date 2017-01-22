@@ -7,7 +7,7 @@ class PowerLocksDriver;
 class LinxCentralLockSystem
 {
 public:
-    LinxCentralLockSystem(LinxRxModule* rxer, PowerLocksDriver* locksDriver);
+    LinxCentralLockSystem(/*LinxRxModule* rxer,*/ PowerLocksDriver* locksDriver);
     ~LinxCentralLockSystem();
 
     void run();
@@ -17,10 +17,10 @@ private:
     LinxCentralLockSystem();
 
     // helper method
-    void decipherRxModuleTransmission();
+    // void decipherRxModuleTransmission();
 
     // member variables
-    LinxRxModule* rxer;
+    // LinxRxModule* rxer;
     PowerLocksDriver* locksDriver;
 };
 
