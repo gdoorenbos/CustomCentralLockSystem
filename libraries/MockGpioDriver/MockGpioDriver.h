@@ -2,6 +2,7 @@
 #define MOCK_GPIO_DRIVER
 
 #include "GpioDriver.h"
+#include <string>
 
 class MockGpioDriver : public GpioDriver
 {
@@ -27,12 +28,16 @@ public:
     bool isHighWithDebounce(int debounceTime = 100) const;
     bool isLowWithDebounce(int debounceTime = 100) const;
 
+    std::string getLog();
+    void clearLog();
+
 private:
     bool outputConfigFlag;
     bool inputConfigFlag;
     bool inputPullupConfigFlag;
     bool pinIsLow;
     mutable int lastDebounceTime;
+    std::string log;
 
     void resetConfigFlags();
 };

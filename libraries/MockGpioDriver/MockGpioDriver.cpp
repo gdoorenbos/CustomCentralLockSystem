@@ -7,6 +7,7 @@ MockGpioDriver::MockGpioDriver()
     , inputPullupConfigFlag(false)
     , pinIsLow(true)
     , lastDebounceTime(0)
+    , log("")
 {
 }
 
@@ -57,11 +58,13 @@ bool MockGpioDriver::isConfiguredForInputPullup()
 
 void MockGpioDriver::setHigh()
 {
+    log += "H";
     pinIsLow = false;
 }
 
 void MockGpioDriver::setLow()
 {
+    log += "L";
     pinIsLow = true;
 }
 
@@ -85,4 +88,14 @@ bool MockGpioDriver::isLowWithDebounce(int debounceTime) const
 {
     lastDebounceTime = debounceTime;
     return isLow();
+}
+
+std::string MockGpioDriver::getLog()
+{
+    return log;
+}
+
+void MockGpioDriver::clearLog()
+{
+    log = "";
 }

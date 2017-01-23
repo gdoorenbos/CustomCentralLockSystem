@@ -1,93 +1,107 @@
-#include "gtest/gtest.h"
 #include "MockPowerLocksDriver.h"
+#include "MockGpioDriver.h"
+#include "gtest/gtest.h"
 
-// helper functions
-void expectLocked(MockPowerLocksDriver powerLocks)
+class MockPowerLocksDriverTest : public ::testing::Test
 {
-	EXPECT_TRUE(powerLocks.areDoorsLocked());
-}
+public:
+    MockPowerLocksDriverTest()
+        : lockCmdPin(new MockGpioDriver())
+        , unlockCmdPin(new MockGpioDriver())
+        , powerLocks(lockCmdPin, unlockCmdPin)
+    {
+        lockCmdPin->clearLog();
+        unlockCmdPin->clearLog();
+    }
 
-void expectUnlocked(MockPowerLocksDriver powerLocks)
-{
-	EXPECT_FALSE(powerLocks.areDoorsLocked());
-}
+    void assertLocked()
+    {
+        ASSERT_TRUE(powerLocks.areDoorsLocked());
+        ASSERT_STREQ("", unlockCmdPin->getLog().c_str());
+        ASSERT_STREQ("HL", lockCmdPin->getLog().c_str());
+        lockCmdPin->clearLog();
+    }
+
+    void assertUnlocked()
+    {
+        ASSERT_FALSE(powerLocks.areDoorsLocked());
+        ASSERT_STREQ("", lockCmdPin->getLog().c_str());
+        ASSERT_STREQ("HL", unlockCmdPin->getLog().c_str());
+        unlockCmdPin->clearLog();
+    }
+
+    MockGpioDriver* lockCmdPin;
+    MockGpioDriver* unlockCmdPin;
+    MockPowerLocksDriver powerLocks;
+};
 
 // tests
-TEST(MockPowerLocksDriver, initializedUnlocked)
+TEST_F(MockPowerLocksDriverTest, initialConfiguration)
 {
-	MockPowerLocksDriver powerLocks;
-	expectUnlocked(powerLocks);
+    ASSERT_TRUE(lockCmdPin->isConfiguredForOutput());
+    ASSERT_TRUE(unlockCmdPin->isConfiguredForOutput());
 }
 
-TEST(MockPowerLocksDriver, properBehaviorWhenLocked)
+TEST_F(MockPowerLocksDriverTest, properBehaviorWhenLocked)
 {
-	MockPowerLocksDriver powerLocks;
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
+    powerLocks.lockDoors();
+    assertLocked();
 }
 
-TEST(MockPowerLocksDriver, properBehaviorWhenUnlocked)
+TEST_F(MockPowerLocksDriverTest, properBehaviorWhenUnlocked)
 {
-	MockPowerLocksDriver powerLocks;
-	powerLocks.lockDoors();
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
+    powerLocks.unlockDoors();
+    assertUnlocked();
 }
 
-TEST(MockPowerLocksDriver, repetitiveLockss)
+TEST_F(MockPowerLocksDriverTest, repetitiveLockss)
 {
-	MockPowerLocksDriver powerLocks;
-	expectUnlocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.lockDoors();
+    assertLocked();
 }
 
-TEST(MockPowerLocksDriver, repetitiveUnlocks)
+TEST_F(MockPowerLocksDriverTest, repetitiveUnlocks)
 {
-	MockPowerLocksDriver powerLocks;
-	expectUnlocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
 }
 
-TEST(MockPowerLocksDriver, repetitiveLockAndUnlockCycles)
+TEST_F(MockPowerLocksDriverTest, repetitiveLockAndUnlockCycles)
 {
-	MockPowerLocksDriver powerLocks;
-	expectUnlocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
-	powerLocks.lockDoors();
-	expectLocked(powerLocks);
-	powerLocks.unlockDoors();
-	expectUnlocked(powerLocks);
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
+    powerLocks.lockDoors();
+    assertLocked();
+    powerLocks.unlockDoors();
+    assertUnlocked();
 }
