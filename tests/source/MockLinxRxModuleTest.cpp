@@ -6,7 +6,7 @@ class MockLinxRxModuleTest : public ::testing::Test
 {
 protected:
     MockLinxRxModuleTest()
-        : rxer(new MockGpioDriver(), new MockGpioDriver())
+        : rxer()
     {
     }
 

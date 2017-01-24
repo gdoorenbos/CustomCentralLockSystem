@@ -1,50 +1,106 @@
-#include "gtest/gtest.h"
-// #include "MockLinxRxModule.h"
-#include "MockPowerLocksDriver.h"
 #include "LinxCentralLockSystem.h"
+#include "MockLinxRxModule.h"
+#include "MockPowerLocksDriver.h"
+#include "MockPushButtonDriver.h"
+#include "MockGpioDriver.h"
+#include "gtest/gtest.h"
 
-#define KEYFOB_LOCK_BUTTON      4
-#define KEYFOB_UNLOCK_BUTTON    2
+class LinxCentralLockSystemTest : public ::testing::Test
+{
+protected:
+    LinxCentralLockSystemTest()
+        : rxer()
+        , locksDriver()
+        , lockButton()
+        , unlockButton()
+        , lcs(&rxer, &locksDriver, &lockButton, &unlockButton)
+    {
+    }
 
-// TEST(LinxCentralLockSystem, rxModuleWorksGoldenScenario)
-// {
-//     MockLinxRxModule rxer;
-//     MockPowerLocksDriver locksDriver;
-//     LinxCentralLockSystem cls(&rxer, &locksDriver);
+    ~LinxCentralLockSystemTest()
+    {
+    }
 
-//     rxer.pushFobButton(KEYFOB_LOCK_BUTTON);
-//     cls.run();
-//     ASSERT_TRUE(locksDriver.areDoorsLocked());
+    void assertDoorsAreLocked()
+    {
+        ASSERT_TRUE(locksDriver.areDoorsLocked());
+    }
 
-//     rxer.pushFobButton(KEYFOB_UNLOCK_BUTTON);
-//     cls.run();
-//     ASSERT_FALSE(locksDriver.areDoorsLocked());
+    void assertDoorsAreUnlocked()
+    {
+        ASSERT_FALSE(locksDriver.areDoorsLocked());
+    }
 
-//     rxer.pushFobButton(KEYFOB_LOCK_BUTTON);
-//     cls.run();
-//     ASSERT_TRUE(locksDriver.areDoorsLocked());
-// }
+    MockLinxRxModule rxer;
+    MockPowerLocksDriver locksDriver;
+    MockPushButtonDriver lockButton;
+    MockPushButtonDriver unlockButton;
+    LinxCentralLockSystem lcs;
+};
 
-// TEST(LinxCentralLockSystem, rxModuleGracefullyHandlesBadTransmissions)
-// {
-//     MockLinxRxModule rxer;
-//     MockPowerLocksDriver locksDriver;
-//     LinxCentralLockSystem cls(&rxer, &locksDriver);
+TEST_F(LinxCentralLockSystemTest, verifyButtonsWork)
+{
+    lockButton.press();
+    lcs.run();
+    lockButton.release();
+    assertDoorsAreLocked();
 
-//     // lock doors
-//     locksDriver.lockDoors();
+    unlockButton.press();
+    lcs.run();
+    unlockButton.release();
+    assertDoorsAreUnlocked();
 
-//     // send errant messages
-//     rxer.pushFobButton(0);
-//     cls.run();
-//     ASSERT_TRUE(locksDriver.areDoorsLocked());
+    lockButton.press();
+    lcs.run();
+    lockButton.release();
+    assertDoorsAreLocked();
 
-//     rxer.pushFobButton(100);
-//     cls.run();
-//     ASSERT_TRUE(locksDriver.areDoorsLocked());
+    unlockButton.press();
+    lcs.run();
+    unlockButton.release();
+    assertDoorsAreUnlocked();
+}
 
-//     // send valid message
-//     rxer.pushFobButton(KEYFOB_UNLOCK_BUTTON);
-//     cls.run();
-//     ASSERT_FALSE(locksDriver.areDoorsLocked());
-// }
+TEST_F(LinxCentralLockSystemTest, verifyRxModuleWorks)
+{
+    rxer.raiseLockRequest();
+    lcs.run();
+    rxer.clearLockRequest();
+    assertDoorsAreLocked();
+
+    rxer.raiseUnlockRequest();
+    lcs.run();
+    rxer.clearUnlockRequest();
+    assertDoorsAreUnlocked();
+
+    rxer.raiseLockRequest();
+    lcs.run();
+    rxer.clearLockRequest();
+    assertDoorsAreLocked();
+
+    rxer.raiseUnlockRequest();
+    lcs.run();
+    rxer.clearUnlockRequest();
+    assertDoorsAreUnlocked();
+}
+
+TEST_F(LinxCentralLockSystemTest, verifyLockHigherPriorityThanUnlock)
+{
+    lockButton.press();
+    unlockButton.press();
+    lcs.run();
+    lockButton.release();
+    unlockButton.release();
+    assertDoorsAreLocked();
+}
+
+TEST_F(LinxCentralLockSystemTest, verifyButtonHigherPriorityThanWireless)
+{
+    lockButton.press();
+    rxer.raiseUnlockRequest();
+    lcs.run();
+    rxer.clearUnlockRequest();
+    lockButton.release();
+    assertDoorsAreLocked();
+}
+

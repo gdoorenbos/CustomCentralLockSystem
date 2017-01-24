@@ -1,9 +1,9 @@
 #ifndef ARDUINO_INTERNAL_PULLUP_PIN_H
 #define ARDUINO_INTERNAL_PULLUP_PIN_H
 
-#include "GenericInternalPullupPin.h"
+#include "InternalPullupPin.h"
 
-class ArduinoInternalPullupPin : GenericInternalPullupPin
+class ArduinoInternalPullupPin : public InternalPullupPin
 {
 public:
     ArduinoInternalPullupPin(int pin);
@@ -12,6 +12,6 @@ public:
 private:
     // intentionally not implemented
     ArduinoInternalPullupPin();
-}
+};
 
 #endif

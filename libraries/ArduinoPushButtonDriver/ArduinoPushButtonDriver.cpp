@@ -6,6 +6,6 @@ ArduinoPushButtonDriver::ArduinoPushButtonDriver(int pin)
 {
 }
 
-ArduinoGpioDriver::~ArduinoGpioDriver()
+ArduinoPushButtonDriver::~ArduinoPushButtonDriver()
 {
 }

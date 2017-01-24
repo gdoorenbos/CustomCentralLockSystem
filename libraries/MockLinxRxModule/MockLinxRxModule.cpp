@@ -1,17 +1,8 @@
 #include "MockLinxRxModule.h"
-#include "MockGpioDriver.h"
-
-MockLinxRxModule::MockLinxRxModule(MockGpioDriver* lockReqPin, MockGpioDriver* unlockReqPin)
-    : LinxRxModule(lockReqPin, unlockReqPin)
-    , _lockReqPinDriver(lockReqPin)
-    , _unlockReqPinDriver(unlockReqPin)
-{
-}
+#include "MockInternalPullupPin.h"
 
 MockLinxRxModule::MockLinxRxModule()
-    : LinxRxModule(new MockGpioDriver(), new MockGpioDriver())
-    , _lockReqPinDriver()
-    , _unlockReqPinDriver()
+    : LinxRxModule(new MockInternalPullupPin(), new MockInternalPullupPin())
 {
 }
 
@@ -19,32 +10,34 @@ MockLinxRxModule::~MockLinxRxModule()
 {
 }
 
-void MockLinxRxModule::raiseRequest(MockGpioDriver* pin)
+void MockLinxRxModule::raiseRequest(InternalPullupPin* pin)
 {
-    pin->setLow();
+    // ugly downcast, but in this class it should always work.
+    ((MockInternalPullupPin*)pin)->setLogicHigh();
 }
 
-void MockLinxRxModule::clearRequest(MockGpioDriver* pin)
+void MockLinxRxModule::clearRequest(InternalPullupPin* pin)
 {
-    pin->setHigh();
+    // ugly downcast, but in this class it should always work.
+    ((MockInternalPullupPin*)pin)->setLogicLow();
 }
 
 void MockLinxRxModule::raiseLockRequest()
 {
-    raiseRequest(_lockReqPinDriver);
-}
-
-void MockLinxRxModule::clearLockRequest()
-{
-    clearRequest(_lockReqPinDriver);
+    raiseRequest(_lockReqPin);
 }
 
 void MockLinxRxModule::raiseUnlockRequest()
 {
-    raiseRequest(_unlockReqPinDriver);
+    raiseRequest(_unlockReqPin);
+}
+
+void MockLinxRxModule::clearLockRequest()
+{
+    clearRequest(_lockReqPin);
 }
 
 void MockLinxRxModule::clearUnlockRequest()
 {
-    clearRequest(_unlockReqPinDriver);
+    clearRequest(_unlockReqPin);
 }

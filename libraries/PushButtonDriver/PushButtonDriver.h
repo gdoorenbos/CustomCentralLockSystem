@@ -1,9 +1,9 @@
 #ifndef PUSH_BUTTON_DRIVER_H
 #define PUSH_BUTTON_DRIVER_H
 
-#include "GenericInternalPullupPin.h"
+#include "InternalPullupPin.h"
 
-class PushButtonDriver : public GenericInternalPullupPin
+class PushButtonDriver : public InternalPullupPin
 {
 public:
     PushButtonDriver(GpioDriver* pinDriver);

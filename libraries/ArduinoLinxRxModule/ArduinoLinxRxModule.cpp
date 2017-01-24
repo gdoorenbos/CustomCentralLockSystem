@@ -1,8 +1,8 @@
 #include "ArduinoLinxRxModule.h"
-#include "ArduinoGpioDriver.h"
+#include "ArduinoInternalPullupPin.h"
 
 ArduinoLinxRxModule::ArduinoLinxRxModule(int lockReqPin, int unlockReqPin)
-    : ArduinoLinxRxModule(ArduinoGpioDriver(lockReqPin), ArduinoGpioDriver(unlockReqPin))
+    : LinxRxModule(new ArduinoInternalPullupPin(lockReqPin), new ArduinoInternalPullupPin(unlockReqPin))
 {
 }
 

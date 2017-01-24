@@ -3,11 +3,11 @@
 
 class GpioDriver;
 
-class GenericInternalPullupPin
+class InternalPullupPin
 {
 public:
-    GenericInternalPullupPin(GpioDriver* pinDriver);
-    virtual ~GenericInternalPullupPin();
+    InternalPullupPin(GpioDriver* pinDriver);
+    virtual ~InternalPullupPin();
 
     bool isLogicHigh() const;
     bool isLogicLow() const;

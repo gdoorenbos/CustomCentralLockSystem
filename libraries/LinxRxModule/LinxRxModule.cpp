@@ -1,10 +1,9 @@
 #include "LinxRxModule.h"
-#include "GenericInternalPullupPin.h"
-#include "GpioDriver.h"
+#include "InternalPullupPin.h"
 
-LinxRxModule::LinxRxModule(GpioDriver* lockReqPin, GpioDriver* unlockReqPin)
-    : _lockReqPin(GenericInternalPullupPin(lockReqPin))
-    , _unlockReqPin(GenericInternalPullupPin(unlockReqPin))
+LinxRxModule::LinxRxModule(InternalPullupPin* lockReqPin, InternalPullupPin* unlockReqPin)
+    : _lockReqPin(lockReqPin)
+    , _unlockReqPin(unlockReqPin)
 {
 }
 
@@ -14,10 +13,10 @@ LinxRxModule::~LinxRxModule()
 
 bool LinxRxModule::isLockRequested()
 {
-    _lockReqPin.isLogicHigh();
+    _lockReqPin->isLogicHigh();
 }
 
 bool LinxRxModule::isUnlockRequested()
 {
-    _unlockReqPin.isLogicHigh();
+    _unlockReqPin->isLogicHigh();
 }

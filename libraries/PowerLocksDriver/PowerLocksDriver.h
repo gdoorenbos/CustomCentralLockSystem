@@ -22,11 +22,10 @@ public:
 
     virtual void waitForLocksToSettle() = 0;
 
-protected:
+private:
     GenericOutputPin _lockCmdPin;
     GenericOutputPin _unlockCmdPin;
 
-private:
     // only _lockCmdPin or _unlockCmdPin should be passed to this method.
     void pulseCommandPin(GenericOutputPin &commandPin);
 

@@ -2,7 +2,7 @@
 #include "ArduinoGpioDriver.h"
 
 ArduinoInternalPullupPin::ArduinoInternalPullupPin(int pin)
-    : GenericInternalPullupDriver(new ArduinoGpioDriver(pin))
+    : InternalPullupPin(new ArduinoGpioDriver(pin))
 {
 }
 

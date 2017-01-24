@@ -1,5 +1,5 @@
 #include "ArduinoGpioDriver.h"
-#include "arduino.h"
+#include "Arduino.h"
 
 ArduinoGpioDriver::ArduinoGpioDriver(int pin)
     : _pin(pin)
@@ -45,7 +45,7 @@ bool ArduinoGpioDriver::isLow() const
     return digitalRead(_pin) == LOW;
 }
 
-bool readWithDebounce(int debounceTime, int highOrLow) const
+bool ArduinoGpioDriver::readWithDebounce(int debounceTime, int highOrLow) const
 {
     if( digitalRead(_pin) == highOrLow )
     {

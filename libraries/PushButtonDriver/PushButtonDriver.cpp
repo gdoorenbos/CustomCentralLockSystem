@@ -2,7 +2,7 @@
 #include "GpioDriver.h"
 
 PushButtonDriver::PushButtonDriver(GpioDriver* pinDriver)
-    : GenericInternalPullupPin(pinDriver)
+    : InternalPullupPin(pinDriver)
 {
 }
 

@@ -1,20 +1,20 @@
 #ifndef LINX_RX_MODULE_H
 #define LINX_RX_MODULE_H
 
-#include "GenericInternalPullupPin.h"
+class InternalPullupPin;
 
 class LinxRxModule
 {
 public:
-    LinxRxModule(GpioDriver* lockReqPin, GpioDriver* unlockReqPin);
+    LinxRxModule(InternalPullupPin* lockReqPin, InternalPullupPin* unlockReqPin);
     virtual ~LinxRxModule();
 
     bool isLockRequested();
     bool isUnlockRequested();
 
-private:
-    GenericInternalPullupPin _lockReqPin;
-    GenericInternalPullupPin _unlockReqPin;
+protected:
+    InternalPullupPin* _lockReqPin;
+    InternalPullupPin* _unlockReqPin;
 };
 
 #endif

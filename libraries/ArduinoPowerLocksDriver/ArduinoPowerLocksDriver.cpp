@@ -1,7 +1,9 @@
 #include "ArduinoPowerLocksDriver.h"
+#include "ArduinoGpioDriver.h"
+#include "Arduino.h"
 
 ArduinoPowerLocksDriver::ArduinoPowerLocksDriver(int lockPin, int unlockPin)
-    : PowerLocksDriver(new ArdinoGpioDriver(lockPin), new ArduinoGpioDriver(unlockPin))
+    : PowerLocksDriver(new ArduinoGpioDriver(lockPin), new ArduinoGpioDriver(unlockPin))
 {
 }
 
@@ -9,7 +11,7 @@ ArduinoPowerLocksDriver::~ArduinoPowerLocksDriver()
 {
 }
 
-ArduinoPowerLocksDriver::waitForLocksToSettle()
+void ArduinoPowerLocksDriver::waitForLocksToSettle()
 {
     delay(700);
 }
