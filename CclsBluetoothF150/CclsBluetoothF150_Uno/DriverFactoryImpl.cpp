@@ -1,14 +1,14 @@
 #include "DriverFactoryImpl.h"
 #include "PinDefines.h"
 #include <BluetoothMateSilverDriver.h>
-#include <PowerLocksDriverF150Custom.h>
-#include <PushButtonInternalPullupDriver.h>
+#include <ArduinoPowerLocksDriver.h>
+#include <ArduinoPushButtonDriver.h>
 
 DriverFactoryImpl::DriverFactoryImpl()
     : bluetoothDriver(new BluetoothMateSilverDriver(BLUETOOTH_SERIAL_RX_PIN, BLUETOOTH_SERIAL_TX_PIN))
-    , powerLocksDriver(new PowerLocksDriverF150Custom(POWER_LOCKS_LOCK_PIN, POWER_LOCKS_UNLOCK_PIN))
-    , lockButton(new PushButtonInternalPullupDriver(PUSH_BUTTON_LOCK_PIN))
-    , unlockButton(new PushButtonInternalPullupDriver(PUSH_BUTTON_UNLOCK_PIN))
+    , powerLocksDriver(new ArduinoPowerLocksDriver(POWER_LOCKS_LOCK_PIN, POWER_LOCKS_UNLOCK_PIN))
+    , lockButton(new ArduinoPushButtonDriver(PUSH_BUTTON_LOCK_PIN))
+    , unlockButton(new ArduinoPushButtonDriver(PUSH_BUTTON_UNLOCK_PIN))
 {
 }
 
