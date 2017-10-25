@@ -57,10 +57,10 @@ bool ArduinoGpioDriver::readWithDebounce(int debounceTime, int highOrLow) const
 
 bool ArduinoGpioDriver::isHighWithDebounce(int debounceTime) const
 {
-    readWithDebounce(debounceTime, HIGH);
+    return readWithDebounce(debounceTime, HIGH);
 }
 
 bool ArduinoGpioDriver::isLowWithDebounce(int debounceTime) const
 {
-    readWithDebounce(debounceTime, LOW);
+    return readWithDebounce(debounceTime, LOW);
 }

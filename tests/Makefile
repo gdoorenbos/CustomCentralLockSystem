@@ -127,13 +127,13 @@ clean-packages: $(CLEAN_TARGETS)
 
 # Build targets
 $(LIB_OBJS):$(OBJ_DIR)/%.o: $(LIB_DIR)/%.cpp $(LIB_HEADERS) $(GTEST_HEADERS) | $(LIB_OBJ_DIRS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Werror -c $< -o $@
 
 $(TEST_OBJS):$(OBJ_DIR)/%.o: $(USER_DIR)/%.cpp $(LIB_HEADERS) $(GTEST_HEADERS) | $(OBJ_DIR)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Werror -c $< -o $@
 
 $(TEST_EXECUTABLE): $(TEST_OBJS) $(LIB_OBJS) $(GTEST_MAIN_A) | $(OUTPUT_DIR)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Werror -lpthread $^ -o $@
 
 .PHONY: build
 build: $(TEST_EXECUTABLE)

@@ -20,7 +20,7 @@ void giveCharacterToParserAndVerifyNoMessage(const char inputChar, BluetoothMess
 
 void giveBareStringToParserAndVerifyNoMessage(const char* inputStr, BluetoothMessageParser &parser)
 {
-	for(int i=0; i<strlen(inputStr); ++i)
+	for(unsigned int i=0; i<strlen(inputStr); ++i)
 		giveCharacterToParserAndVerifyNoMessage(inputStr[i], parser);
 }
 

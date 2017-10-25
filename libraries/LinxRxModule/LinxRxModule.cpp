@@ -13,10 +13,10 @@ LinxRxModule::~LinxRxModule()
 
 bool LinxRxModule::isLockRequested()
 {
-    _lockReqPin->isLogicHigh();
+    return _lockReqPin->isLogicHigh();
 }
 
 bool LinxRxModule::isUnlockRequested()
 {
-    _unlockReqPin->isLogicHigh();
+    return _unlockReqPin->isLogicHigh();
 }
