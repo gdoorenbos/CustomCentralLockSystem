@@ -2,12 +2,12 @@
 #define PIN_DEFINES_H
 
 // Power Locks
-const int LOCK_CMD_PIN = 9;         // Physical Pin 4
-const int UNLOCK_CMD_PIN = 10;      // Physical Pin 5
+const int LOCK_CMD_PIN = 2;         // Physical Pin 4
+const int UNLOCK_CMD_PIN = 3;       // Physical Pin 5
 
 // push buttons
-const int LOCK_REQ_BTN_PIN = 3;     // Physical Pin 11
-const int UNLOCK_REQ_BTN_PIN = 2;   // Physical Pin 12
+const int LOCK_REQ_BTN_PIN = 8;     // Physical Pin 11
+const int UNLOCK_REQ_BTN_PIN = 9;   // Physical Pin 12
 
 // LEDs
 const int RED_LED_PIN = 0;          // Physical Pin 2

@@ -104,12 +104,16 @@ void led_startup_sequence()
 
 void lock_doors()
 {
+    turn_on_led(GREEN_LED_PIN);
     pulse_lock_driver_pin(LOCK_CMD_PIN);
+    turn_off_led(GREEN_LED_PIN);
 }
 
 void unlock_doors()
 {
+    turn_on_led(RED_LED_PIN);
     pulse_lock_driver_pin(UNLOCK_CMD_PIN);
+    turn_off_led(RED_LED_PIN);
 }
 
 void setup()
